@@ -66,7 +66,7 @@ namespace Dodge_Game
         {
             if (playerImmune == true)
             {
-                e.Graphics.FillRectangle(new SolidBrush(Color.White), player);
+            e.Graphics.FillRectangle(new SolidBrush(Color.White), player);
             }
             else
             {
@@ -95,9 +95,9 @@ namespace Dodge_Game
                 if (enemy != null) 
                 {
                     e.Graphics.FillEllipse(new SolidBrush(Color.Green), enemy.body);
-                }
-                
             }
+                
+        }
             foreach (Lazer l in lazers)
             {
                 if (l != null)
@@ -136,10 +136,10 @@ namespace Dodge_Game
                         playerVelX *= 5;
                         playerVelY *= 5;
                         currentCooldown = cooldownTickBase;
-                    }
+            }
                     break;
                     
-            }
+        }
         }
 
         private void GameScreen_KeyUp(object sender, KeyEventArgs e)
@@ -257,21 +257,25 @@ namespace Dodge_Game
             {
                 player.X = this.Width - 5;
                 playerVelX = -playerVelX/2;
+                playerAccelX = 0;
             }
             if (player.X < 0)
             {
                 player.X = 0;
                 playerVelX = -playerVelX/2;
+                playerAccelX = 0;
             }
             if (player.Y > this.Height)
             {
                 player.Y = this.Height - 5;
                 playerVelY = -playerVelY/2;
+                playerAccelY = 0;
             }
             if (player.Y < 0)
             {
                 player.Y = 0;
                 playerVelY = -playerVelY/2;
+                playerAccelY = 0;
             }
 
             if (heldLeft != true && heldRight != true)
@@ -353,7 +357,7 @@ namespace Dodge_Game
                         else
                         {
                             ballList.Remove(b);
-                            Refresh();
+            Refresh();
                             return;
                         }
 
@@ -369,7 +373,9 @@ namespace Dodge_Game
             player = new RectangleF();
             player.Size = new Size(15,15);
             player.Location = new Point((this.Width/2) - 5, (this.Height/2) - 5);
+            playerAccelX = 0;
             playerVelX = 0;
+            playerAccelY = 0;
             playerVelY = 0;
             score = -1;
             lives = 3;

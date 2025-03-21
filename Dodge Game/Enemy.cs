@@ -75,7 +75,7 @@ namespace Dodge_Game
             }
 
             if (player.IntersectsWith(body))
-            {
+        {
                 return 1;
             }
 
