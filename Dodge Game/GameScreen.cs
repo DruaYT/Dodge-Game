@@ -10,6 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Shapes;
+using System.Windows.Resources;
+using System.Media;
+using System.Resources;
 
 namespace Dodge_Game
 {
@@ -21,6 +24,7 @@ namespace Dodge_Game
 
         RectangleF player;
         Random rand = new Random();
+        
         bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown;
         float playerVelX, playerVelY;
         int score, lives, currentCooldown, currentShootCooldown;
@@ -58,6 +62,7 @@ namespace Dodge_Game
                 if(_change < 0)
                 {
                     lives--;
+                    SoundPlayer shoot = new SoundPlayer(Properties.Resources.ResourceManager.GetStream(Properties.Resources.sound_Hit));
                 }
             }
         }
@@ -133,8 +138,8 @@ namespace Dodge_Game
                 case Keys.Space:
                     if (currentCooldown <= 0)
                     {
-                        playerVelX *= 5;
-                        playerVelY *= 5;
+                        playerVelX *= 2;
+                        playerVelY *= 2;
                         currentCooldown = cooldownTickBase;
             }
                     break;
@@ -232,7 +237,7 @@ namespace Dodge_Game
                 Refresh();
                 return;
             }
-            labelStats.Text = $"LIVES: {lives} - SCORE: {score}\n\r [SPACE] To Dodge!\n\r [LMB] To Shoot!";
+            labelStats.Text = $"LIVES: {lives} - SCORE: {score}\n\r [SPACE] To Dodge / Parry!\n\r [LMB] To Shoot!";
             if (heldUp == true && playerVelY - 1 > -playerTeminalVelocity)
             {
                 playerVelY--;
@@ -257,25 +262,21 @@ namespace Dodge_Game
             {
                 player.X = this.Width - 5;
                 playerVelX = -playerVelX/2;
-                playerAccelX = 0;
             }
             if (player.X < 0)
             {
                 player.X = 0;
                 playerVelX = -playerVelX/2;
-                playerAccelX = 0;
             }
             if (player.Y > this.Height)
             {
                 player.Y = this.Height - 5;
                 playerVelY = -playerVelY/2;
-                playerAccelY = 0;
             }
             if (player.Y < 0)
             {
                 player.Y = 0;
                 playerVelY = -playerVelY/2;
-                playerAccelY = 0;
             }
 
             if (heldLeft != true && heldRight != true)
@@ -373,9 +374,7 @@ namespace Dodge_Game
             player = new RectangleF();
             player.Size = new Size(15,15);
             player.Location = new Point((this.Width/2) - 5, (this.Height/2) - 5);
-            playerAccelX = 0;
             playerVelX = 0;
-            playerAccelY = 0;
             playerVelY = 0;
             score = -1;
             lives = 3;
