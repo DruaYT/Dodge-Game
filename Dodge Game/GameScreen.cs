@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using System.Windows.Resources;
 using System.Media;
 using System.Resources;
+using System.Reflection;
 
 namespace Dodge_Game
 {
@@ -25,6 +26,7 @@ namespace Dodge_Game
         RectangleF player;
         Random rand = new Random();
         
+
         bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown;
         float playerVelX, playerVelY;
         int score, lives, currentCooldown, currentShootCooldown;
@@ -36,6 +38,23 @@ namespace Dodge_Game
         public GameScreen()
         {
             InitializeComponent();
+        }
+
+        private void flashCheck()
+        {
+
+            if (this.BackColor.R != 0)
+            {
+                this.BackColor=Color.FromArgb(255, this.BackColor.R - 1, this.BackColor.G, this.BackColor.B);
+            }
+            if (this.BackColor.G != 0)
+            {
+                this.BackColor = Color.FromArgb(255, this.BackColor.R, this.BackColor.G - 1, this.BackColor.B);
+            }
+            if (this.BackColor.B != 0)
+            {
+                this.BackColor = Color.FromArgb(255, this.BackColor.R, this.BackColor.G, this.BackColor.B - 1);
+            }
         }
 
         private void changeScore(int _change)
@@ -62,7 +81,10 @@ namespace Dodge_Game
                 if(_change < 0)
                 {
                     lives--;
-                    SoundPlayer shoot = new SoundPlayer(Properties.Resources.ResourceManager.GetStream(Properties.Resources.sound_Hit));
+                    this.BackColor = Color.Red;
+                    SoundPlayer h = new SoundPlayer(Properties.Resources.sound_Hit);
+                    h.PlaySync();
+                    Refresh();
                 }
             }
         }
@@ -141,7 +163,10 @@ namespace Dodge_Game
                         playerVelX *= 2;
                         playerVelY *= 2;
                         currentCooldown = cooldownTickBase;
-            }
+                        SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Dodge);
+                        shoot.LoadTimeout = 1;
+                        shoot.Play();
+                    }
                     break;
                     
         }
@@ -189,6 +214,7 @@ namespace Dodge_Game
         }
         private void gameTimer_Tick(object sender, EventArgs e)
         {
+            flashCheck();
             mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
             mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
             if (currentCooldown > 0)
@@ -208,6 +234,11 @@ namespace Dodge_Game
             {
                 if (LeftMouseDown == true)
                 {
+                    this.BackColor = Color.FromArgb(255, 100, 50, 50);
+                    SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Shoot);
+                    shoot.LoadTimeout = 1;
+                    shoot.Play();
+                    
                     currentShootCooldown = shootCooldownBase;
                     RectangleF b = new RectangleF
                     {
@@ -350,6 +381,9 @@ namespace Dodge_Game
                     {
                         if (change != 2 && playerImmune == true) 
                         {
+                            this.BackColor = Color.FromArgb(255, 100, 100, 100);
+                            SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Parry);
+                            shoot.PlaySync();
                             b.IsFriendly = true;
                             b.isHit = false;
                             b.velX = -b.velX;
@@ -358,7 +392,7 @@ namespace Dodge_Game
                         else
                         {
                             ballList.Remove(b);
-            Refresh();
+                            Refresh();
                             return;
                         }
 
