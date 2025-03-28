@@ -129,7 +129,7 @@
             this.buttonFullScreen.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.buttonFullScreen.FlatAppearance.BorderSize = 3;
             this.buttonFullScreen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonFullScreen.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonFullScreen.Font = new System.Drawing.Font("MS Gothic", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonFullScreen.ForeColor = System.Drawing.Color.White;
             this.buttonFullScreen.Location = new System.Drawing.Point(602, 337);
             this.buttonFullScreen.Name = "buttonFullScreen";

@@ -382,8 +382,9 @@ namespace Dodge_Game
                         if (change != 2 && playerImmune == true) 
                         {
                             this.BackColor = Color.FromArgb(255, 100, 100, 100);
-                            SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Parry);
-                            shoot.PlaySync();
+                            SoundPlayer parry = new SoundPlayer(Properties.Resources.sound_Parry);
+                            parry.Load();
+                            parry.Play();
                             b.IsFriendly = true;
                             b.isHit = false;
                             b.velX = -b.velX;
