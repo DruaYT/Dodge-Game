@@ -22,6 +22,7 @@ namespace Dodge_Game
         private void startGame()
         {
             GameScreen game = new GameScreen();
+
             game.Size = f.Size;
             f.Controls.Add(game);
             f.Controls.Remove(this);
@@ -35,6 +36,7 @@ namespace Dodge_Game
         private void cropComponents()
         {
             f = this.FindForm();
+
             this.Width = f.Width;
             this.Height = f.Height;
             labelTitle.Location = new Point((f.Width / 2) - (labelTitle.Width / 2), 0 + (f.Height / 8));
@@ -87,6 +89,7 @@ namespace Dodge_Game
                 this.FindForm().WindowState = FormWindowState.Maximized;
                 buttonFullScreen.Text = "WINDOWED";
             }
+
             cropComponents();
             Refresh();
         }

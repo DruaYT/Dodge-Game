@@ -33,6 +33,7 @@ namespace Dodge_Game
         private void buttonMenu_Click(object sender, EventArgs e)
         {
             MenuScreen menu = new MenuScreen();
+
             menu.Size = this.FindForm().Size;
             this.FindForm().Controls.Add(menu);
             this.FindForm().Controls.Remove(this);

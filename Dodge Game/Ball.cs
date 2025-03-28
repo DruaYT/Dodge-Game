@@ -11,8 +11,11 @@ namespace Dodge_Game
     internal class Ball
     {
         public RectangleF body;
+
         public float velX, velY;
+
         public bool isHit = false, IsFriendly;
+
         public Ball(float _velX, float _velY, RectangleF _body, bool _IsFriendly) 
         {
             velX = _velX/50;
@@ -32,6 +35,7 @@ namespace Dodge_Game
                 isHit = false;
                 return true;
             }
+
             return false;
         }
 
@@ -41,12 +45,15 @@ namespace Dodge_Game
             if (body.X > f.Width - body.Width)
             {
                 h = CheckForHit();
+
                 body.X = f.Width - 10;
                 velX = -velX;
             }
+
             if (body.X < 0)
             {
                 h = CheckForHit();
+
                 body.X = 0;
                 velX = -velX;
             }
@@ -54,12 +61,15 @@ namespace Dodge_Game
             if (body.Y > f.Height - body.Height)
             {
                 h = CheckForHit();
+
                 body.Y = f.Height - 10;
                 velY = -velY;
             }
+
             if (body.Y < 0)
             {
                 h = CheckForHit();
+
                 body.Y = 0;
                 velY = -velY;
             }
@@ -71,10 +81,12 @@ namespace Dodge_Game
             {
                 return -1;
             }
+
             if (h == true)
             {
                 return 2;
             }
+
             return 0;
         }
     }
