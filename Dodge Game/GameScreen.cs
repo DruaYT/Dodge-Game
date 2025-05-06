@@ -14,6 +14,7 @@ using System.Windows.Resources;
 using System.Media;
 using System.Resources;
 using System.Reflection;
+using System.Windows.Documents;
 
 namespace Dodge_Game
 {
@@ -32,7 +33,7 @@ namespace Dodge_Game
         Random rand = new Random();
         
 
-        bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown;
+        bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown, IsPaused, CanPause;
 
         float playerVelX, playerVelY;
 
@@ -173,7 +174,7 @@ namespace Dodge_Game
                     break;
 
                 case Keys.Space:
-                    if (currentCooldown <= 0)
+                    if (currentCooldown <= 0 && IsPaused == false)
                     {
                         playerVelX *= 2;
                         playerVelY *= 2;
@@ -181,6 +182,17 @@ namespace Dodge_Game
                         SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Dodge);
                         shoot.LoadTimeout = 1;
                         shoot.Play();
+                    }
+                    break;
+
+                case Keys.Escape:
+                    if (IsPaused)
+                    {
+                        IsPaused = false;
+                    }
+                    else
+                    {
+                        IsPaused = true;
                     }
                     break;
                     
@@ -212,6 +224,10 @@ namespace Dodge_Game
                     currentCooldown--;
                     break;
 
+                case Keys.Escape:
+                    CanPause = true;
+                    break;
+
             }
         }
 
@@ -237,224 +253,261 @@ namespace Dodge_Game
         }
         private void gameTimer_Tick(object sender, EventArgs e)
         {
-            flashCheck();
-            mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
-            mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
+            if (!IsPaused)
+            {
+                flashCheck();
+                mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
+                mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
 
-            if (currentCooldown > 0)
-            {
-                playerImmune = true;
-                currentCooldown--;
-                playerVelX--;
-                playerVelY--;
-            }
-            else
-            {
-                playerImmune = false;
-                currentCooldown = 0;
-            }
+                buttonMenu.Visible = false;
 
-            if(currentShootCooldown <= 0)
-            {
-                if (LeftMouseDown == true)
+                buttonResume.Visible = false;
+
+                pauseLabel.Visible = false;
+
+                if (currentCooldown > 0)
                 {
-                    this.BackColor = Color.FromArgb(255, 100, 50, 50);
-                    SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Shoot);
-
-                    shoot.LoadTimeout = 1;
-                    shoot.Play();
-                    
-                    currentShootCooldown = shootCooldownBase;
-                    RectangleF b = new RectangleF
-                    {
-                        Size = new SizeF(player.Width / Form1.difficulty, player.Height / Form1.difficulty),
-                        Location = new PointF(player.X + player.Width / 2, player.Y + player.Height / 2)
-                    };
-
-                    playerVelX += ((player.X + (player.Width / 2)) - mousePos.X) / 10;
-                    playerVelY += ((player.Y + (player.Height / 2)) - mousePos.Y) / 10;
-                    Ball ball = new Ball(-(player.X+(player.Width/2)) + mousePos.X, -(player.Y + (player.Height / 2)) + mousePos.Y, b, true);
-
-                    ballList.Add(ball);
-                }
-            }
-            else
-            {
-                currentShootCooldown--;
-            }
-
-            if (lives < 0)
-            {
-                GameOverScreen menu = new GameOverScreen();
-
-                menu.Size = this.FindForm().Size;
-                ballList.Clear();
-                enemyList.Clear();
-                gameTimer.Stop();
-                menu.setScore(score);
-                this.FindForm().Controls.Add(menu);
-                this.FindForm().Controls.Remove(this);
-
-                Refresh();
-
-                return;
-            }
-
-            labelStats.Text = $"LIVES: {lives} - SCORE: {score}\n\r [SPACE] To Dodge / Parry!\n\r [LMB] To Shoot!";
-
-            if (heldUp == true && playerVelY - 1 > -playerTeminalVelocity)
-            {
-                playerVelY--;
-            }
-
-            if (heldDown == true && playerVelY + 1 < playerTeminalVelocity)
-            {
-                playerVelY++;
-            }
-
-            if (heldLeft == true && playerVelX - 1 > -playerTeminalVelocity)
-            {
-                playerVelX--;
-            }
-
-            if (heldRight == true && playerVelX + 1 < playerTeminalVelocity)
-            {
-                playerVelX++;
-            }
-
-            player.Y += playerVelY;
-            player.X += playerVelX;
-
-            if (player.X > this.Width)
-            {
-                player.X = this.Width - 5;
-                playerVelX = -playerVelX/2;
-            }
-
-            if (player.X < 0)
-            {
-                player.X = 0;
-                playerVelX = -playerVelX/2;
-            }
-
-            if (player.Y > this.Height)
-            {
-                player.Y = this.Height - 5;
-                playerVelY = -playerVelY/2;
-            }
-
-            if (player.Y < 0)
-            {
-                player.Y = 0;
-                playerVelY = -playerVelY/2;
-            }
-
-            if (heldLeft != true && heldRight != true)
-            {
-                playerVelX /= (float)1.5;
-            }
-
-            if (heldUp != true && heldDown != true)
-            {
-                playerVelY /= (float)1.5;
-            }
-            
-            foreach(Enemy en in enemyList)
-            {
-                int change = en.Update(player, this.FindForm());
-                if (change != 0) 
-                {
-                    changeScore(change);
-                    enemyList.Remove(en);
-                    Refresh();
-                    return;
+                    playerImmune = true;
+                    currentCooldown--;
+                    playerVelX--;
+                    playerVelY--;
                 }
                 else
                 {
-                    foreach(Ball b in ballList)
+                    playerImmune = false;
+                    currentCooldown = 0;
+                }
+
+                if (currentShootCooldown <= 0)
+                {
+                    if (LeftMouseDown == true)
                     {
-                        if (b.IsFriendly == true && en.body.IntersectsWith(b.body)) 
-                        {
-                            changeScore(1);
-                            ballList.Remove(b);
-                            enemyList.Remove(en);
-                            Refresh();
-                            return;
-                        }
-                    }
+                        this.BackColor = Color.FromArgb(255, 100, 50, 50);
+                        SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Shoot);
 
-                    if(rand.Next(0, 100) <= Form1.difficulty*15 && rand.Next(0, 100) % 6 == 1)
-                    {
-                        float LaunchX = (player.X - en.body.X) * Form1.difficulty;
-                        float LaunchY = (player.Y - en.body.Y) * Form1.difficulty;
+                        shoot.LoadTimeout = 1;
+                        shoot.Play();
 
-                        if (Form1.difficulty > 2)
-                        {
-                            PointF p0 = new PointF(LaunchX*100, LaunchY*100);
-                            PointF p1 = new PointF(-LaunchX * 100, -LaunchY * 100);
-
-                            Lazer l = new Lazer(p0, p1, rand.Next(5, 30), 20 * Form1.difficulty, 25 / Form1.difficulty);
-                            lazers.Add(l);
-                        }
-
+                        currentShootCooldown = shootCooldownBase;
                         RectangleF b = new RectangleF
                         {
-                            Size = new Size(5*Form1.difficulty, 5* Form1.difficulty),
-                            Location = new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2)
+                            Size = new SizeF(player.Width / Form1.difficulty, player.Height / Form1.difficulty),
+                            Location = new PointF(player.X + player.Width / 2, player.Y + player.Height / 2)
                         };
 
-                        Ball ball = new Ball(LaunchX, LaunchY, b, false);
+                        playerVelX += ((player.X + (player.Width / 2)) - mousePos.X) / 10;
+                        playerVelY += ((player.Y + (player.Height / 2)) - mousePos.Y) / 10;
+                        Ball ball = new Ball(-(player.X + (player.Width / 2)) + mousePos.X, -(player.Y + (player.Height / 2)) + mousePos.Y, b, true);
 
                         ballList.Add(ball);
                     }
-
                 }
-            }
-
-            foreach (Ball b in ballList)
-            {
-                int change = b.Update(player, this.FindForm());
-                if (change != 0)
+                else
                 {
-                    if(change != 2 && playerImmune != true)
+                    currentShootCooldown--;
+                }
+
+                if (lives < 0)
+                {
+                    GameOverScreen menu = new GameOverScreen();
+
+                    menu.Size = this.FindForm().Size;
+                    ballList.Clear();
+                    enemyList.Clear();
+                    gameTimer.Stop();
+                    menu.setScore(score);
+                    this.FindForm().Controls.Add(menu);
+                    this.FindForm().Controls.Remove(this);
+
+                    Refresh();
+
+                    return;
+                }
+
+                labelStats.Text = $"LIVES: {lives} - SCORE: {score}\n\r [SPACE] To Dodge / Parry!\n\r [LMB] To Shoot!";
+
+                if (heldUp == true && playerVelY - 1 > -playerTeminalVelocity)
+                {
+                    playerVelY--;
+                }
+
+                if (heldDown == true && playerVelY + 1 < playerTeminalVelocity)
+                {
+                    playerVelY++;
+                }
+
+                if (heldLeft == true && playerVelX - 1 > -playerTeminalVelocity)
+                {
+                    playerVelX--;
+                }
+
+                if (heldRight == true && playerVelX + 1 < playerTeminalVelocity)
+                {
+                    playerVelX++;
+                }
+
+                player.Y += playerVelY;
+                player.X += playerVelX;
+
+                if (player.X > this.Width)
+                {
+                    player.X = this.Width - 5;
+                    playerVelX = -playerVelX / 2;
+                }
+
+                if (player.X < 0)
+                {
+                    player.X = 0;
+                    playerVelX = -playerVelX / 2;
+                }
+
+                if (player.Y > this.Height)
+                {
+                    player.Y = this.Height - 5;
+                    playerVelY = -playerVelY / 2;
+                }
+
+                if (player.Y < 0)
+                {
+                    player.Y = 0;
+                    playerVelY = -playerVelY / 2;
+                }
+
+                if (heldLeft != true && heldRight != true)
+                {
+                    playerVelX /= (float)1.5;
+                }
+
+                if (heldUp != true && heldDown != true)
+                {
+                    playerVelY /= (float)1.5;
+                }
+
+                foreach (Enemy en in enemyList)
+                {
+                    int change = en.Update(player, this.FindForm());
+                    if (change != 0)
                     {
                         changeScore(change);
-                        
-                        ballList.Remove(b);
+                        enemyList.Remove(en);
                         Refresh();
-                         return;
+                        return;
                     }
                     else
                     {
-                        if (change != 2 && playerImmune == true) 
+                        foreach (Ball b in ballList)
                         {
-                            this.BackColor = Color.FromArgb(255, 100, 100, 100);
-                            SoundPlayer parry = new SoundPlayer(Properties.Resources.sound_Parry);
-                            parry.Load();
-                            parry.Play();
-                            b.IsFriendly = true;
-                            b.isHit = false;
-                            b.velX = -b.velX;
-                            b.velY = -b.velY;
+                            if (b.IsFriendly == true && en.body.IntersectsWith(b.body))
+                            {
+                                changeScore(1);
+                                ballList.Remove(b);
+                                enemyList.Remove(en);
+                                Refresh();
+                                return;
+                            }
                         }
-                        else
+
+                        if (rand.Next(0, 100) <= Form1.difficulty * 15 && rand.Next(0, 100) % 6 == 1)
                         {
+                            float LaunchX = (player.X - en.body.X) * Form1.difficulty;
+                            float LaunchY = (player.Y - en.body.Y) * Form1.difficulty;
+
+                            if (Form1.difficulty > 2)
+                            {
+                                PointF p0 = new PointF(LaunchX * 100, LaunchY * 100);
+                                PointF p1 = new PointF(-LaunchX * 100, -LaunchY * 100);
+
+                                Lazer l = new Lazer(p0, p1, rand.Next(5, 30), 20 * Form1.difficulty, 25 / Form1.difficulty);
+                                lazers.Add(l);
+                            }
+
+                            RectangleF b = new RectangleF
+                            {
+                                Size = new Size(5 * Form1.difficulty, 5 * Form1.difficulty),
+                                Location = new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2)
+                            };
+
+                            Ball ball = new Ball(LaunchX, LaunchY, b, false);
+
+                            ballList.Add(ball);
+                        }
+
+                    }
+                }
+
+                foreach (Ball b in ballList)
+                {
+                    int change = b.Update(player, this.FindForm());
+                    if (change != 0)
+                    {
+                        if (change != 2 && playerImmune != true)
+                        {
+                            changeScore(change);
+
                             ballList.Remove(b);
                             Refresh();
                             return;
                         }
+                        else
+                        {
+                            if (change != 2 && playerImmune == true)
+                            {
+                                this.BackColor = Color.FromArgb(255, 100, 100, 100);
+                                SoundPlayer parry = new SoundPlayer(Properties.Resources.sound_Parry);
+                                parry.Load();
+                                parry.Play();
+                                b.IsFriendly = true;
+                                b.isHit = false;
+                                b.velX = -b.velX;
+                                b.velY = -b.velY;
+                            }
+                            else
+                            {
+                                ballList.Remove(b);
+                                Refresh();
+                                return;
+                            }
+
+                        }
 
                     }
-                    
+                }
+
+                Refresh();
+            }
+            else
+            {
+                if (CanPause == true)
+                {
+                    CanPause = false;
+
+                    IsPaused = true;
+
+                    gameTimer.Stop();
+
+                    buttonResume.Enabled = true;
+                    buttonResume.Visible = true;
+                    buttonResume.Width = this.Width / 5;
+                    buttonResume.Location = new Point((this.Width / 2) - (buttonResume.Width / 2), (this.Width / 2) - (buttonResume.Height / 2));
+
+                    buttonMenu.Enabled = true;
+                    buttonMenu.Visible = true;
+                    buttonMenu.Width = this.Width / 5;
+                    buttonMenu.Location = new Point(buttonResume.Location.X, buttonResume.Location.Y + (int)(buttonResume.Height * 1.1));
+
+                    pauseLabel.Visible = true;
+                    pauseLabel.Location = new Point(buttonResume.Location.X, buttonResume.Location.Y - (int)(buttonResume.Height * 1.1));
                 }
             }
-
-            Refresh() ;
         }
 
         private void GameScreen_Load(object sender, EventArgs e)
         {
             player = new RectangleF();
+
+            IsPaused = false;
+
+            CanPause = true;
 
             player.Size = new Size(15,15);
             player.Location = new Point((this.Width/2) - 5, (this.Height/2) - 5);
