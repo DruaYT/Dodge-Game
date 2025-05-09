@@ -30,59 +30,63 @@ namespace Dodge_Game
             body.X += Xvel;
             PointF diff = new PointF(body.X - player.X, body.Y - player.Y);
 
-            if (player.X + diff.X/2 > body.X && Xvel+1 < terminalVel)
+            if (Form1.IsPaused == false)
             {
-                Xvel++;
-            }
-            else
-            {
-                if (player.X + diff.X/2 < body.X && Xvel - 1 > -terminalVel)
+                if (player.X + diff.X / 2 > body.X && Xvel + 1 < terminalVel)
                 {
-                    Xvel--;
+                    Xvel++;
                 }
-            }
-
-            if (player.Y + diff.Y/2 > body.Y && Yvel + 1 < terminalVel)
-            {
-                Yvel++;
-            }
-            else
-            {
-                if (player.Y + diff.Y/2 < body.Y && Yvel - 1 > -terminalVel)
+                else
                 {
-                    Yvel--;
+                    if (player.X + diff.X / 2 < body.X && Xvel - 1 > -terminalVel)
+                    {
+                        Xvel--;
+                    }
                 }
-            }
 
-            if(body.X > f.Width - body.Width) 
-            {
-                body.X = f.Width - body.Width;
-                Xvel /= -2;
-            }
+                if (player.Y + diff.Y / 2 > body.Y && Yvel + 1 < terminalVel)
+                {
+                    Yvel++;
+                }
+                else
+                {
+                    if (player.Y + diff.Y / 2 < body.Y && Yvel - 1 > -terminalVel)
+                    {
+                        Yvel--;
+                    }
+                }
 
-            if (body.X < 0)
-            {
-                body.X = 0;
-                Xvel /= -2;
-            }
+                if (body.X > f.Width - body.Width)
+                {
+                    body.X = f.Width - body.Width;
+                    Xvel /= -2;
+                }
 
-            if (body.Y > f.Height - body.Height)
-            {
-                body.Y = f.Height - body.Height;
-                Yvel /= -2;
-            }
+                if (body.X < 0)
+                {
+                    body.X = 0;
+                    Xvel /= -2;
+                }
 
-            if (body.Y < 0)
-            {
-                body.Y = 0;
-                Yvel /= -2;
-            }
+                if (body.Y > f.Height - body.Height)
+                {
+                    body.Y = f.Height - body.Height;
+                    Yvel /= -2;
+                }
 
-            if (player.IntersectsWith(body))
-        {
-                return 1;
-            }
+                if (body.Y < 0)
+                {
+                    body.Y = 0;
+                    Yvel /= -2;
+                }
 
+                if (player.IntersectsWith(body))
+                {
+                    return 1;
+                }
+
+                return 0;
+            }
             return 0;
         }
     }

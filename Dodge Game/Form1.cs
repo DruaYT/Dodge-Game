@@ -13,6 +13,9 @@ namespace Dodge_Game
     public partial class Form1 : Form
     {
         public static int difficulty;
+
+        public static bool IsPaused;
+
         public Form1()
         {
             InitializeComponent();
@@ -21,5 +24,6 @@ namespace Dodge_Game
             menu.Size = this.Size;
             this.Controls.Add(menu);
         }
+
     }
 }
