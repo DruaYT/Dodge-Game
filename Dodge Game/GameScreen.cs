@@ -26,6 +26,8 @@ namespace Dodge_Game
 
         List<Lazer> lazers = new List<Lazer>();
 
+        List<Particle> particles = new List<Particle>();
+
         RectangleF player;
 
         PointF mousePos;
@@ -163,6 +165,14 @@ namespace Dodge_Game
                 {
                     e.Graphics.FillEllipse(new SolidBrush(Color.Green), enemy.body);
                 }  
+            }
+
+            foreach(Particle p in particles)
+            {
+                if(p != null && p.color.A <= 255)
+                {
+                    e.Graphics.FillEllipse(new SolidBrush(p.color), p.body);
+                }
             }
 
             foreach (Lazer l in lazers)
@@ -306,6 +316,8 @@ namespace Dodge_Game
                     currentCooldown--;
                     playerVelX--;
                     playerVelY--;
+                    Particle p = new Particle(-playerVelX + rand.Next(-3, 3), -playerVelY + rand.Next(-3,3), (float)2, player.X + (player.Width / 2), player.Y + (player.Height / 2), 150, rand.Next(10, 20), Color.LightGray);
+                    particles.Add(p);
                 }
                 else
                 {
@@ -505,6 +517,17 @@ namespace Dodge_Game
 
                         }
 
+                    }
+                }
+
+                foreach(Particle p in particles)
+                {
+                    p.Render();
+
+                    if (p.color.A <= 0)
+                    {
+                        particles.Remove(p);
+                        break;
                     }
                 }
 
