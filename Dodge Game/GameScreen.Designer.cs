@@ -70,6 +70,7 @@
             this.buttonResume.TabIndex = 7;
             this.buttonResume.Text = "RESUME";
             this.buttonResume.UseVisualStyleBackColor = true;
+            this.buttonResume.Click += new System.EventHandler(this.buttonResume_Click);
             // 
             // buttonMenu
             // 
@@ -85,6 +86,7 @@
             this.buttonMenu.TabIndex = 8;
             this.buttonMenu.Text = "MENU";
             this.buttonMenu.UseVisualStyleBackColor = true;
+            this.buttonMenu.Click += new System.EventHandler(this.buttonMenu_Click);
             // 
             // pauseLabel
             // 
@@ -110,7 +112,7 @@
             this.Controls.Add(this.buttonResume);
             this.Controls.Add(this.labelStats);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "GameScreen";
             this.Size = new System.Drawing.Size(516, 386);
             this.Load += new System.EventHandler(this.GameScreen_Load);

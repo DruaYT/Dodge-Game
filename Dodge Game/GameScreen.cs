@@ -33,12 +33,39 @@ namespace Dodge_Game
         Random rand = new Random();
         
 
-        bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown, CanPause = true;
+        bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown, CanPause, IsPaused;
 
         float playerVelX, playerVelY;
 
         int score, lives, currentCooldown, currentShootCooldown;
         int cooldownTickBase = 10, shootCooldownBase = 10*Form1.difficulty;
+
+        private void buttonMenu_Click(object sender, EventArgs e)
+        {
+            MenuScreen menu = new MenuScreen();
+
+            menu.Size = this.FindForm().Size;
+            ballList.Clear();
+            enemyList.Clear();
+            gameTimer.Stop();
+            this.FindForm().Controls.Add(menu);
+            this.FindForm().Controls.Remove(this);
+        }
+
+        private void buttonResume_Click(object sender, EventArgs e)
+        {
+            IsPaused = false;
+            CanPause = true;
+
+            buttonResume.Enabled = false;
+            buttonResume.Visible = false;
+
+            buttonMenu.Visible = false;
+            buttonMenu.Enabled = false;
+
+            return;
+        }
+
         int playerTeminalVelocity = 10;
 
         public GameScreen()
@@ -175,7 +202,7 @@ namespace Dodge_Game
                     break;
 
                 case Keys.Space:
-                    if (currentCooldown <= 0 && Form1.IsPaused == false)
+                    if (currentCooldown <= 0 && IsPaused == false)
                     {
                         playerVelX *= 2;
                         playerVelY *= 2;
@@ -184,14 +211,22 @@ namespace Dodge_Game
                         shoot.LoadTimeout = 1;
                         shoot.Play();
                     }
-                break;
+                    break;
 
-                case Keys.Tab:
-                    if (Form1.IsPaused == false)
+                case Keys.P:
+                    if (CanPause == true)
                     {
-                        Form1.IsPaused = true;
+                        if (IsPaused == false) 
+                        {
+                            IsPaused = true;
+                        }
+                        else if (IsPaused == true)
+                        {
+                            IsPaused = false;
+                        }
+                        
                     }
-                break;
+                    break;
                     
             }
 
@@ -221,7 +256,7 @@ namespace Dodge_Game
                     currentCooldown--;
                 break;
 
-                case Keys.Tab:
+                case Keys.P:
                     CanPause = true;
                 break;
 
@@ -253,7 +288,7 @@ namespace Dodge_Game
 
         private void gameTimer_Tick(object sender, EventArgs e)
         {
-            if (Form1.IsPaused == false)
+            if (IsPaused == false)
             {
                 flashCheck();
                 mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
@@ -480,7 +515,7 @@ namespace Dodge_Game
                 buttonResume.Enabled = true;
                 buttonResume.Visible = true;
                 buttonResume.Width = this.Width / 5;
-                buttonResume.Location = new Point((this.Width / 2) - (buttonResume.Width / 2), (this.Width / 2) - (buttonResume.Height / 2));
+                buttonResume.Location = new Point((this.Width / 2) - (buttonResume.Width / 2), (this.Height / 2) - (buttonResume.Height / 2));
 
                 buttonMenu.Enabled = true;
                 buttonMenu.Visible = true;
@@ -488,7 +523,7 @@ namespace Dodge_Game
                 buttonMenu.Location = new Point(buttonResume.Location.X, buttonResume.Location.Y + (int)(buttonResume.Height * 1.1));
 
                 pauseLabel.Visible = true;
-                pauseLabel.Location = new Point(buttonResume.Location.X, buttonResume.Location.Y - (int)(buttonResume.Height * 1.1));
+                pauseLabel.Location = new Point(buttonResume.Location.X + (pauseLabel.Width/2), buttonResume.Location.Y - (int)(buttonResume.Height * 1.1));
             }
         }
 
@@ -498,6 +533,16 @@ namespace Dodge_Game
 
             CanPause = true;
 
+            IsPaused = false;
+
+            buttonResume.Enabled = false;
+            buttonResume.Visible = false;
+
+            buttonMenu.Enabled = false;
+            buttonMenu.Visible = false;
+
+            pauseLabel.Visible = false;
+
             player.Size = new Size(15,15);
             player.Location = new Point((this.Width/2) - 5, (this.Height/2) - 5);
             playerVelX = 0;
@@ -506,7 +551,7 @@ namespace Dodge_Game
             lives = 3;
             labelStats.Location = new Point((this.Width / 2)-(labelStats.Width/2), labelStats.Height);
 
-            gameTimer.Start();
+            gameTimer.Enabled = true;
 
             changeScore(1);
         }

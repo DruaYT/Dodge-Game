@@ -14,8 +14,6 @@ namespace Dodge_Game
     {
         public static int difficulty;
 
-        public static bool IsPaused;
-
         public Form1()
         {
             InitializeComponent();
