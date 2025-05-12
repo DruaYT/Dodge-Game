@@ -54,30 +54,6 @@ namespace Dodge_Game
                 }
             }
 
-            if (body.X > f.Width - body.Width)
-            {
-                body.X = f.Width - body.Width;
-                Xvel /= -2;
-            }
-
-            if (body.X < 0)
-            {
-                body.X = 0;
-                Xvel /= -2;
-            }
-
-            if (body.Y > f.Height - body.Height)
-            {
-                body.Y = f.Height - body.Height;
-                Yvel /= -2;
-            }
-
-            if (body.Y < 0)
-            {
-                body.Y = 0;
-                Yvel /= -2;
-            }
-
             if (player.IntersectsWith(body))
             {
                 return 1;

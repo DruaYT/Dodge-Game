@@ -15,6 +15,7 @@ using System.Media;
 using System.Resources;
 using System.Reflection;
 using System.Windows.Documents;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Dodge_Game
 {
@@ -108,7 +109,7 @@ namespace Dodge_Game
                     r.Y = rand.Next(20, this.Width - 20);
                     r.Width = 20;
                     r.Height = 20;
-                    Enemy n = new Enemy(new PointF(r.X, r.Y), 20, r);
+                    Enemy n = new Enemy(new PointF(r.X, r.Y), 40, r);
                     enemyList.Add(n);
                 }
 
@@ -181,11 +182,11 @@ namespace Dodge_Game
                 {
                     if (l.IsWarning == true) 
                     {
-                        e.Graphics.FillPath(new SolidBrush(Color.FromArgb(150, Color.Pink)), l.body);
+                        e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb(150, Color.Pink)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
                     }
                     else
                     {
-                        e.Graphics.FillPath(new SolidBrush(Color.Red), l.body);
+                        e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb((1 + (l.duration/l.totalduration))*255, Color.Red)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
                     }
                 }
             }
@@ -330,20 +331,31 @@ namespace Dodge_Game
                     if (LeftMouseDown == true)
                     {
                         this.BackColor = Color.FromArgb(255, 100, 50, 50);
+
                         SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Shoot);
 
                         shoot.LoadTimeout = 1;
                         shoot.Play();
 
                         currentShootCooldown = shootCooldownBase;
+
                         RectangleF b = new RectangleF
                         {
                             Size = new SizeF(player.Width / Form1.difficulty, player.Height / Form1.difficulty),
                             Location = new PointF(player.X + player.Width / 2, player.Y + player.Height / 2)
                         };
 
+                        for (int i = 1; i < rand.Next(5,10); i++)
+                        {
+                            Particle p = new Particle((-(player.X + (player.Width / 2)) + mousePos.X + rand.Next(-180, 180))/10, (-(player.Y + (player.Height / 2)) + mousePos.Y + rand.Next(-180, 180))/10, (float)rand.NextDouble() + 1, player.X + player.Width / 2, player.Y + player.Height / 2, 255, rand.Next(5, 15), Color.Blue);
+
+                            particles.Add(p);
+
+                        }
+
                         playerVelX += ((player.X + (player.Width / 2)) - mousePos.X) / 10;
                         playerVelY += ((player.Y + (player.Height / 2)) - mousePos.Y) / 10;
+
                         Ball ball = new Ball(-(player.X + (player.Width / 2)) + mousePos.X, -(player.Y + (player.Height / 2)) + mousePos.Y, b, true);
 
                         ballList.Add(ball);
@@ -433,23 +445,73 @@ namespace Dodge_Game
                 foreach (Enemy en in enemyList)
                 {
                     int change = en.Update(player, this.FindForm());
+
                     if (change != 0)
                     {
+                        for (int i = 1; i < rand.Next(5, 10); i++)
+                        {
+                            int size = rand.Next(5, 15);
+
+                            Particle p = new Particle((rand.Next(-45, 45)+playerVelX)*10 / size, (rand.Next(-45, 45) + playerVelY)*10 / size, (float)size, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Red);
+
+                            particles.Add(p);
+
+                        }
+
                         changeScore(change);
                         enemyList.Remove(en);
+
                         Refresh();
+
                         return;
                     }
                     else
                     {
+                        if (en.body.X > this.FindForm().Width - en.body.Width)
+                        {
+                            en.body.X = this.FindForm().Width - en.body.Width;
+                            en.Xvel /= -2;
+                        }
+
+                        if (en.body.X < 0)
+                        {
+                            en.body.X = 0;
+                            en.Xvel /= -2;
+                        }
+
+                        if (en.body.Y > this.FindForm().Height - en.body.Height)
+                        {
+                            en.body.Y = this.FindForm().Height - en.body.Height;
+                            en.Yvel /= -2;
+                        }
+
+                        if (en.body.Y < 0)
+                        {
+                            en.body.Y = 0;
+                            en.Yvel /= -2;
+                        }
+
                         foreach (Ball b in ballList)
                         {
                             if (b.IsFriendly == true && en.body.IntersectsWith(b.body))
                             {
+                                for (int i = 1; i < rand.Next(5, 10); i++)
+                                {
+                                    int size = rand.Next(5, 15);
+
+                                    Particle p = new Particle(rand.Next(-180, 180) / size, rand.Next(-180, 180) / size, (float)size, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Red);
+
+                                    particles.Add(p);
+
+                                }
+
                                 changeScore(1);
+
                                 ballList.Remove(b);
                                 enemyList.Remove(en);
+
                                 Refresh();
+
                                 return;
                             }
                         }
@@ -459,12 +521,15 @@ namespace Dodge_Game
                             float LaunchX = (player.X - en.body.X) * Form1.difficulty;
                             float LaunchY = (player.Y - en.body.Y) * Form1.difficulty;
 
-                            if (Form1.difficulty > 2)
+                            if (Form1.difficulty > 2 && rand.Next(0, 100) <= Form1.difficulty * 15)
                             {
-                                PointF p0 = new PointF(LaunchX * 100, LaunchY * 100);
-                                PointF p1 = new PointF(-LaunchX * 100, -LaunchY * 100);
+                                PointF p0 = new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2) );
+                                PointF p1 = new PointF(LaunchX * 100, LaunchY * 100);
 
                                 Lazer l = new Lazer(p0, p1, rand.Next(5, 30), 20 * Form1.difficulty, 25 / Form1.difficulty);
+
+                                l.IsWarning = true;
+
                                 lazers.Add(l);
                             }
 
@@ -493,6 +558,7 @@ namespace Dodge_Game
 
                             ballList.Remove(b);
                             Refresh();
+
                             return;
                         }
                         else
@@ -500,7 +566,9 @@ namespace Dodge_Game
                             if (change != 2 && playerImmune == true)
                             {
                                 this.BackColor = Color.FromArgb(255, 100, 100, 100);
+
                                 SoundPlayer parry = new SoundPlayer(Properties.Resources.sound_Parry);
+
                                 parry.Load();
                                 parry.Play();
                                 b.IsFriendly = true;
@@ -528,6 +596,36 @@ namespace Dodge_Game
                     {
                         particles.Remove(p);
                         break;
+                    }
+                }
+
+                foreach (Lazer l in lazers)
+                {
+                    if (l.warnTime <= 0)
+                    {
+                        l.IsWarning = false;
+                    }
+                    else
+                    {
+                        l.warnTime--;
+                    }
+
+                    if (l.duration > 0 && l.IsWarning == false)
+                    {
+                        l.duration--;
+
+                    }
+                    else
+                    {
+                        if (l.IsWarning == false)
+                        {
+
+                            lazers.Remove(l);
+
+                            return;
+
+                        }
+                        
                     }
                 }
 

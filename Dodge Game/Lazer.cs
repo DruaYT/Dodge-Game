@@ -8,9 +8,9 @@ namespace Dodge_Game
     internal class Lazer
     {
         public PointF point0, point1;
-        public int lwidth, duration, warnTime;
+        public int lwidth, duration, totalduration, warnTime;
         public bool IsWarning;
-        public GraphicsPath body;
+        public Line body;
         Line line;
 
         public Lazer(PointF _point0, PointF _point1, int _width, int _duration, int _warntime) 
@@ -20,9 +20,17 @@ namespace Dodge_Game
             lwidth = _width;
             duration = _duration;
             warnTime = _warntime;
-            body = new GraphicsPath();
-            body.AddLine(point0.X, point0.Y, point1.X, point1.Y);
-            
+
+            totalduration = duration;
+
+            body = new Line();
+
+            body.X1 = point0.X;
+            body.Y1 = point0.Y;
+
+            body.X2 = point1.X;
+            body.Y2 = point1.Y;
+
         }
 
         public int Update(RectangleF player, Form f)
