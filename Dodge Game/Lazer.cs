@@ -2,6 +2,8 @@
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Windows.Shapes;
+using System.Collections.Generic;
+using System;
 
 namespace Dodge_Game
 {
@@ -12,6 +14,8 @@ namespace Dodge_Game
         public bool IsWarning;
         public Line body;
         Line line;
+
+        public List<RectangleF> hitboxes = new List<RectangleF>();
 
         public Lazer(PointF _point0, PointF _point1, int _width, int _duration, int _warntime) 
         {
@@ -31,28 +35,22 @@ namespace Dodge_Game
             body.X2 = point1.X;
             body.Y2 = point1.Y;
 
+            int segs = (int)Math.Sqrt(Math.Pow(point1.X - point0.X, 2) + Math.Pow(point1.Y - point0.Y, 2));
+
+            for (int i = 0; i < segs/_width; i++)
+            {
+                RectangleF hit = new RectangleF();
+
+                hit.Location = new PointF(point0.X + (point1.X/(i*_width)), point0.Y + (point1.Y / (i * _width)));
+
+                hit.Width = _width;
+                hit.Height = _width;
+
+                hitboxes.Add(hit);
+                
+            }
+
         }
 
-        public int Update(RectangleF player, Form f)
-        {
-            if (warnTime > 0)
-            {
-                warnTime--;
-                IsWarning = true;
-            }
-            else
-            {
-                duration--;
-                IsWarning = false;
-            }
-            if(duration <= 0)
-            {
-                return 2;
-            }
-            else
-            {
-                return 0;
-            }
-        }
     }
 }

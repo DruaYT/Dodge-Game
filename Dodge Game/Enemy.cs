@@ -13,15 +13,49 @@ namespace Dodge_Game
     {
         public RectangleF body;
 
+        public string type;
+
+        public Color color;
         public int Xvel, Yvel;
         public int terminalVel = 15;
 
-        public Enemy(PointF _pos, int _sz, RectangleF _body) 
+        public Enemy(PointF _pos, RectangleF _body, string _type) 
         {
             body = _body;
+
+            type = _type;
+
+            switch (type)
+            {
+                case "normal":
+                    body.Width = 40;
+                    body.Height = 40;
+                    color = Color.Green;
+
+                    break;
+
+                case "armored":
+                    body.Width = 30;
+                    body.Height = 30;
+                    color = Color.LightGray;
+
+                    break;
+
+                case "lazer":
+                    body.Width = 40;
+                    body.Height = 40;
+                    color = Color.Orange;
+
+                    break;
+
+                default:
+                    body.Width = 40;
+                    body.Height = 40;
+                    color = Color.Green;
+                    break;
+            }
+
             body.Location = _pos;
-            body.Width = _sz;
-            body.Height = _sz;
         }
 
         public int Update(RectangleF player, Form f)
@@ -56,7 +90,15 @@ namespace Dodge_Game
 
             if (player.IntersectsWith(body))
             {
-                return 1;
+                if (type != "armored")
+                {
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+                }
+
             }
 
             return 0;

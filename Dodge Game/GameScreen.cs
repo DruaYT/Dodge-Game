@@ -40,7 +40,7 @@ namespace Dodge_Game
 
         float playerVelX, playerVelY;
 
-        int score, lives, currentCooldown, currentShootCooldown;
+        int score, lives, currentCooldown, currentShootCooldown, tick;
         int cooldownTickBase = 10, shootCooldownBase = 10*Form1.difficulty;
 
         private void buttonMenu_Click(object sender, EventArgs e)
@@ -95,32 +95,34 @@ namespace Dodge_Game
             }
         }
 
+        private void AddEnemy()
+        {
+            RectangleF r = new RectangleF();
+
+            r.X = rand.Next(20, this.Width - 20);
+            r.Y = rand.Next(20, this.Width - 20);
+            r.Width = 20;
+            r.Height = 20;
+            Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
+            enemyList.Add(n);
+        }
+
         private void changeScore(int _change)
         {
-            
+
             if (_change > 0)
             {
                 score += _change;
-                for (int i = 0; i < 1; i++)
-                {
-                    RectangleF r = new RectangleF();
-
-                    r.X = rand.Next(20, this.Width - 20);
-                    r.Y = rand.Next(20, this.Width - 20);
-                    r.Width = 20;
-                    r.Height = 20;
-                    Enemy n = new Enemy(new PointF(r.X, r.Y), 40, r);
-                    enemyList.Add(n);
-                }
-
             }
             else
             {
-                if(_change < 0)
+                if (_change < 0)
                 {
                     lives--;
                     this.BackColor = Color.Red;
                     SoundPlayer h = new SoundPlayer(Properties.Resources.sound_Hit);
+
+                    currentCooldown = cooldownTickBase * 3;
 
                     h.PlaySync();
                     Refresh();
@@ -164,7 +166,7 @@ namespace Dodge_Game
             {
                 if (enemy != null) 
                 {
-                    e.Graphics.FillEllipse(new SolidBrush(Color.Green), enemy.body);
+                    e.Graphics.FillEllipse(new SolidBrush(enemy.color), enemy.body);
                 }  
             }
 
@@ -186,7 +188,7 @@ namespace Dodge_Game
                     }
                     else
                     {
-                        e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb((1 + (l.duration/l.totalduration))*255, Color.Red)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
+                        e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb( 255/Math.Abs(1+((l.totalduration - l.duration)/l.totalduration ) ) , Color.Red)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
                     }
                 }
             }
@@ -299,8 +301,21 @@ namespace Dodge_Game
 
         private void gameTimer_Tick(object sender, EventArgs e)
         {
+
             if (IsPaused == false)
             {
+                tick++;
+
+                if (enemyList.Count == 0)
+                {
+                    AddEnemy();
+                }
+
+                if ((tick % 100 == 0) && rand.Next(1, 100) <= Form1.difficulty * 10)
+                {
+                    AddEnemy();
+                }
+
                 flashCheck();
                 mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
                 mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
@@ -341,7 +356,7 @@ namespace Dodge_Game
 
                         RectangleF b = new RectangleF
                         {
-                            Size = new SizeF(player.Width / Form1.difficulty, player.Height / Form1.difficulty),
+                            Size = new SizeF((int)(player.Width / 1.2), (int)(player.Height / 1.2)),
                             Location = new PointF(player.X + player.Width / 2, player.Y + player.Height / 2)
                         };
 
@@ -442,28 +457,38 @@ namespace Dodge_Game
                     playerVelY /= (float)1.5;
                 }
 
+                //
+                // Enemy Update
+                //
                 foreach (Enemy en in enemyList)
                 {
                     int change = en.Update(player, this.FindForm());
 
                     if (change != 0)
                     {
-                        for (int i = 1; i < rand.Next(5, 10); i++)
+                        if (change < 0)
                         {
-                            int size = rand.Next(5, 15);
-
-                            Particle p = new Particle((rand.Next(-45, 45)+playerVelX)*10 / size, (rand.Next(-45, 45) + playerVelY)*10 / size, (float)size, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Red);
-
-                            particles.Add(p);
-
+                            changeScore(change);
                         }
+                        else
+                        {
+                            for (int i = 1; i < rand.Next(5, 10); i++)
+                            {
+                                int size = rand.Next(5, 15);
 
-                        changeScore(change);
-                        enemyList.Remove(en);
+                                Particle p = new Particle((rand.Next(-45, 45) + playerVelX) * 10 / size, (rand.Next(-45, 45) + playerVelY) * 10 / size, (float)size, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Red);
 
-                        Refresh();
+                                particles.Add(p);
 
-                        return;
+                            }
+
+                            changeScore(change);
+                            enemyList.Remove(en);
+
+                            Refresh();
+
+                            return;
+                        }
                     }
                     else
                     {
@@ -521,12 +546,12 @@ namespace Dodge_Game
                             float LaunchX = (player.X - en.body.X) * Form1.difficulty;
                             float LaunchY = (player.Y - en.body.Y) * Form1.difficulty;
 
-                            if (Form1.difficulty > 2 && rand.Next(0, 100) <= Form1.difficulty * 15)
+                            if (Form1.difficulty > 2 && rand.Next(0, 100) <= Form1.difficulty * 5)
                             {
                                 PointF p0 = new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2) );
                                 PointF p1 = new PointF(LaunchX * 100, LaunchY * 100);
 
-                                Lazer l = new Lazer(p0, p1, rand.Next(5, 30), 20 * Form1.difficulty, 25 / Form1.difficulty);
+                                Lazer l = new Lazer(p0, p1, rand.Next(5, 30), 5 * Form1.difficulty, 100 / Form1.difficulty);
 
                                 l.IsWarning = true;
 
@@ -547,6 +572,9 @@ namespace Dodge_Game
                     }
                 }
 
+                //
+                // Ball Update
+                //
                 foreach (Ball b in ballList)
                 {
                     int change = b.Update(player, this.FindForm());
@@ -573,8 +601,8 @@ namespace Dodge_Game
                                 parry.Play();
                                 b.IsFriendly = true;
                                 b.isHit = false;
-                                b.velX = -b.velX;
-                                b.velY = -b.velY;
+                                b.velX = playerVelX*2;
+                                b.velY = playerVelY*2;
                             }
                             else
                             {
@@ -588,6 +616,9 @@ namespace Dodge_Game
                     }
                 }
 
+                //
+                // Particle Update
+                //
                 foreach(Particle p in particles)
                 {
                     p.Render();
@@ -599,6 +630,9 @@ namespace Dodge_Game
                     }
                 }
 
+                //
+                // Lazer Update
+                //
                 foreach (Lazer l in lazers)
                 {
                     if (l.warnTime <= 0)
@@ -613,6 +647,18 @@ namespace Dodge_Game
                     if (l.duration > 0 && l.IsWarning == false)
                     {
                         l.duration--;
+
+                        foreach (RectangleF h in l.hitboxes)
+                        {
+                            if (h.IntersectsWith(player) && playerImmune == false)
+                            {
+                                playerImmune = true;
+
+                                changeScore(-1);
+                            }
+                        }
+
+
 
                     }
                     else
@@ -643,8 +689,10 @@ namespace Dodge_Game
                 buttonMenu.Width = this.Width / 5;
                 buttonMenu.Location = new Point(buttonResume.Location.X, buttonResume.Location.Y + (int)(buttonResume.Height * 1.1));
 
+                pauseLabel.Width = this.Width / 5;
+
                 pauseLabel.Visible = true;
-                pauseLabel.Location = new Point(buttonResume.Location.X + (pauseLabel.Width/2), buttonResume.Location.Y - (int)(buttonResume.Height * 1.1));
+                pauseLabel.Location = new Point(buttonResume.Location.X, buttonResume.Location.Y - (int)(buttonResume.Height * 1.1));
             }
         }
 
