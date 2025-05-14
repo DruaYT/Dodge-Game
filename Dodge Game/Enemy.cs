@@ -48,6 +48,13 @@ namespace Dodge_Game
 
                     break;
 
+                case "gunner":
+                    body.Width = 35;
+                    body.Height = 35;
+                    color = Color.Cyan;
+
+                    break;
+
                 default:
                     body.Width = 40;
                     body.Height = 40;

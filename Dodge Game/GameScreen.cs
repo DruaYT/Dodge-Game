@@ -29,6 +29,8 @@ namespace Dodge_Game
 
         List<Particle> particles = new List<Particle>();
 
+        List<Particle> todestroy = new List<Particle>();
+
         RectangleF player;
 
         PointF mousePos;
@@ -101,10 +103,30 @@ namespace Dodge_Game
 
             r.X = rand.Next(20, this.Width - 20);
             r.Y = rand.Next(20, this.Width - 20);
-            r.Width = 20;
-            r.Height = 20;
-            Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
-            enemyList.Add(n);
+
+
+            if (rand.Next(1, 100) <= 5 * Form1.difficulty)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gunner");
+                enemyList.Add(n);
+            }
+            else if (rand.Next(1,100) <= 10*Form1.difficulty)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "armored");
+                enemyList.Add(n);
+            }
+            else if (rand.Next(1, 100) <= 12 * Form1.difficulty)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "lazer");
+                enemyList.Add(n);
+            }
+            else
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
+                enemyList.Add(n);
+            }
+
+            
         }
 
         private void changeScore(int _change)
@@ -299,8 +321,59 @@ namespace Dodge_Game
 
         }
 
+        private void FireAsset(string type, PointF pos, float size, float velX, float velY, bool IsFriendly)
+        {
+            switch (type)
+            {
+                case "bullet":
+                    RectangleF b = new RectangleF
+                    {
+                        Size = new SizeF(size, size),
+                        Location = pos
+                    };
+
+                    for (int i = 1; i < rand.Next(3, 6); i++)
+                    {
+                        if (IsFriendly == true)
+                        {
+                            Particle p = new Particle((velX + rand.Next(-180, 180)) / 10, (velY + rand.Next(-180, 180)) / 10, (float)rand.NextDouble() + 1, pos.X, pos.Y, 255, rand.Next((int)size/2, (int)size), Color.Blue);
+                            particles.Add(p);
+                        }
+                        else
+                        {
+                            Particle p = new Particle((velX + rand.Next(-180, 180)) / 10, (velY + rand.Next(-180, 180)) / 10, (float)rand.NextDouble() + 1, pos.X, pos.Y, 255, rand.Next((int)size/2, (int)size), Color.Red);
+                            particles.Add(p);
+                        }
+
+                    }
+
+                    Ball ball = new Ball(velX, velY, b, IsFriendly);
+
+                    ballList.Add(ball);
+
+                    break;
+
+                case "lazer":
+
+                    PointF p0 = new PointF(pos.X, pos.Y);
+                    PointF p1 = new PointF(velX * 100, velY * 100);
+
+                    Lazer l = new Lazer(p0, p1, (int)size, 5 * Form1.difficulty, 50 / Form1.difficulty);
+
+                    l.IsWarning = true;
+
+                    lazers.Add(l);
+
+                    break;
+
+
+            }
+        }
+
         private void gameTimer_Tick(object sender, EventArgs e)
         {
+
+            todestroy.Clear();
 
             if (IsPaused == false)
             {
@@ -354,26 +427,10 @@ namespace Dodge_Game
 
                         currentShootCooldown = shootCooldownBase;
 
-                        RectangleF b = new RectangleF
-                        {
-                            Size = new SizeF((int)(player.Width / 1.2), (int)(player.Height / 1.2)),
-                            Location = new PointF(player.X + player.Width / 2, player.Y + player.Height / 2)
-                        };
-
-                        for (int i = 1; i < rand.Next(5,10); i++)
-                        {
-                            Particle p = new Particle((-(player.X + (player.Width / 2)) + mousePos.X + rand.Next(-180, 180))/10, (-(player.Y + (player.Height / 2)) + mousePos.Y + rand.Next(-180, 180))/10, (float)rand.NextDouble() + 1, player.X + player.Width / 2, player.Y + player.Height / 2, 255, rand.Next(5, 15), Color.Blue);
-
-                            particles.Add(p);
-
-                        }
+                        FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height/1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
 
                         playerVelX += ((player.X + (player.Width / 2)) - mousePos.X) / 10;
                         playerVelY += ((player.Y + (player.Height / 2)) - mousePos.Y) / 10;
-
-                        Ball ball = new Ball(-(player.X + (player.Width / 2)) + mousePos.X, -(player.Y + (player.Height / 2)) + mousePos.Y, b, true);
-
-                        ballList.Add(ball);
                     }
                 }
                 else
@@ -541,32 +598,32 @@ namespace Dodge_Game
                             }
                         }
 
+                        float LaunchX = (player.X - en.body.X) * Form1.difficulty;
+                        float LaunchY = (player.Y - en.body.Y) * Form1.difficulty;
+
                         if (rand.Next(0, 100) <= Form1.difficulty * 15 && rand.Next(0, 100) % 6 == 1)
                         {
-                            float LaunchX = (player.X - en.body.X) * Form1.difficulty;
-                            float LaunchY = (player.Y - en.body.Y) * Form1.difficulty;
-
-                            if (Form1.difficulty > 2 && rand.Next(0, 100) <= Form1.difficulty * 5)
+                            
+                            if (en.type == "lazer")
                             {
-                                PointF p0 = new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2) );
-                                PointF p1 = new PointF(LaunchX * 100, LaunchY * 100);
 
-                                Lazer l = new Lazer(p0, p1, rand.Next(5, 30), 5 * Form1.difficulty, 100 / Form1.difficulty);
+                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 100, LaunchY * 100, false);
 
-                                l.IsWarning = true;
+                            }
+                            else if(en.type == "normal")
+                            {
 
-                                lazers.Add(l);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false);
+
                             }
 
-                            RectangleF b = new RectangleF
-                            {
-                                Size = new Size(5 * Form1.difficulty, 5 * Form1.difficulty),
-                                Location = new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2)
-                            };
 
-                            Ball ball = new Ball(LaunchX, LaunchY, b, false);
+                        }
+                        else if(en.type == "gunner" && tick % 4 == 0)
+                        {
 
-                            ballList.Add(ball);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false);
+
                         }
 
                     }
@@ -625,8 +682,7 @@ namespace Dodge_Game
 
                     if (p.color.A <= 0)
                     {
-                        particles.Remove(p);
-                        break;
+                        todestroy.Add(p);
                     }
                 }
 
@@ -672,6 +728,19 @@ namespace Dodge_Game
 
                         }
                         
+                    }
+                }
+
+                //
+                // Clean Particles
+                //
+                foreach (Particle p in todestroy)
+                {
+                    if (particles.Contains(p))
+                    {
+
+                        particles.Remove(p);
+
                     }
                 }
 

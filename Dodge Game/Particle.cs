@@ -29,13 +29,21 @@ namespace Dodge_Game
 
         public void Render()
         {
-            color = Color.FromArgb(color.A - 15, color.R, color.G, color.B);
+            try
+            {
+                color = Color.FromArgb(color.A - 15, color.R, color.G, color.B);
 
-            body.X += velX;
-            body.Y += velY;
+                body.X += velX;
+                body.Y += velY;
 
-            velX = velX / drag;
-            velY = velY / drag;
+                velX = velX / drag;
+                velY = velY / drag;
+            }
+            catch
+            {
+                color = Color.FromArgb(0, color.R, color.G, color.B);
+            }
+
 
         }
     }
