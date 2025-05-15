@@ -18,6 +18,7 @@ namespace Dodge_Game
         public Color color;
         public int Xvel, Yvel;
         public int terminalVel = 15;
+        public int health;
 
         public Enemy(PointF _pos, RectangleF _body, string _type) 
         {
@@ -30,13 +31,15 @@ namespace Dodge_Game
                 case "normal":
                     body.Width = 40;
                     body.Height = 40;
+                    health = 1;
                     color = Color.Green;
 
                     break;
 
                 case "armored":
-                    body.Width = 30;
-                    body.Height = 30;
+                    body.Width = 60;
+                    body.Height = 60;
+                    health = 5;
                     color = Color.LightGray;
 
                     break;
@@ -44,6 +47,7 @@ namespace Dodge_Game
                 case "lazer":
                     body.Width = 40;
                     body.Height = 40;
+                    health = 3;
                     color = Color.Orange;
 
                     break;
@@ -51,13 +55,31 @@ namespace Dodge_Game
                 case "gunner":
                     body.Width = 35;
                     body.Height = 35;
+                    health = 2;
                     color = Color.Cyan;
+
+                    break;
+
+                case "buckshot":
+                    body.Width = 35;
+                    body.Height = 35;
+                    health = 3;
+                    color = Color.SandyBrown;
+
+                    break;
+
+                case "deflector":
+                    body.Width = 45;
+                    body.Height = 45;
+                    health = 12;
+                    color = Color.White;
 
                     break;
 
                 default:
                     body.Width = 40;
                     body.Height = 40;
+                    health = 1;
                     color = Color.Green;
                     break;
             }
@@ -97,13 +119,27 @@ namespace Dodge_Game
 
             if (player.IntersectsWith(body))
             {
+
+                health--;
+
                 if (type != "armored")
                 {
-                    return 1;
+                   if (health <= 0)
+                    {
+                        return 1;
+                    }
+                    
                 }
                 else
                 {
-                    return -1;
+                    if (health <= 0)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 }
 
             }

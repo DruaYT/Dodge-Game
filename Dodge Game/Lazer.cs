@@ -10,7 +10,7 @@ namespace Dodge_Game
     internal class Lazer
     {
         public PointF point0, point1;
-        public int lwidth, duration, totalduration, warnTime;
+        public int lwidth, defaultwidth, duration, totalduration, warnTime;
         public bool IsWarning;
         public Line body;
         Line line;
@@ -22,6 +22,7 @@ namespace Dodge_Game
             point0 = _point0;
             point1 = _point1;
             lwidth = _width;
+            defaultwidth = _width;
             duration = _duration;
             warnTime = _warntime;
 
@@ -37,19 +38,24 @@ namespace Dodge_Game
 
             int segs = (int)Math.Sqrt(Math.Pow(point1.X - point0.X, 2) + Math.Pow(point1.Y - point0.Y, 2));
 
-            for (int i = 0; i < segs/_width; i++)
+            for (int i = 0; i < (segs / (_width*2)); i++)
             {
                 RectangleF hit = new RectangleF();
 
-                hit.Location = new PointF(point0.X + (point1.X/(i*_width)), point0.Y + (point1.Y / (i * _width)));
+                hit.Location = new PointF(point0.X + (point1.X / (i)), point0.Y + (point1.Y /(i)));
 
                 hit.Width = _width;
                 hit.Height = _width;
 
                 hitboxes.Add(hit);
-                
+
             }
 
+        }
+
+        public void Update()
+        {
+            lwidth = (int)(lwidth/1.2);
         }
 
     }
