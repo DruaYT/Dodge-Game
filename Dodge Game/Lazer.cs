@@ -38,16 +38,20 @@ namespace Dodge_Game
 
             int segs = (int)Math.Sqrt(Math.Pow(point1.X - point0.X, 2) + Math.Pow(point1.Y - point0.Y, 2));
 
-            for (int i = 0; i < (segs / (_width*2)); i++)
+            for (int i = 0; i < (segs / (lwidth)); i++)
             {
-                RectangleF hit = new RectangleF();
+                if (i % lwidth == 0)
+                {
+                    RectangleF hit = new RectangleF();
 
-                hit.Location = new PointF(point0.X + (point1.X / (i)), point0.Y + (point1.Y /(i)));
+                    hit.Location = new PointF(point0.X+(point0.X + point1.X) / (i * lwidth), point0.Y+(point0.Y + point1.Y)/(i*lwidth));
 
-                hit.Width = _width;
-                hit.Height = _width;
+                    hit.Width = lwidth;
+                    hit.Height = lwidth;
 
-                hitboxes.Add(hit);
+                    hitboxes.Add(hit);
+                }
+
 
             }
 

@@ -72,7 +72,7 @@ namespace Dodge_Game
                     body.Width = 45;
                     body.Height = 45;
                     health = 12;
-                    color = Color.White;
+                    color = Color.Yellow;
 
                     break;
 
@@ -134,7 +134,15 @@ namespace Dodge_Game
                 {
                     if (health <= 0)
                     {
-                        return 1;
+                        if (type == "lazer" || type == "gunner")
+                        {
+                            return 2;
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+
                     }
                     else
                     {

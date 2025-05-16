@@ -29,7 +29,7 @@ namespace Dodge_Game
 
         List<Particle> particles = new List<Particle>();
 
-        List<Particle> todestroy = new List<Particle>();
+        List<object> dispose = new List<object>();
 
         RectangleF player;
 
@@ -145,6 +145,11 @@ namespace Dodge_Game
             if (_change > 0)
             {
                 score += _change;
+
+                if (_change > 1)
+                {
+                    lives++;
+                }
             }
             else
             {
@@ -395,7 +400,7 @@ namespace Dodge_Game
         private void gameTimer_Tick(object sender, EventArgs e)
         {
 
-            todestroy.Clear();
+            dispose.Clear();
 
             if (IsPaused == false)
             {
@@ -562,11 +567,11 @@ namespace Dodge_Game
                             }
 
                             changeScore(change);
-                            enemyList.Remove(en);
+                            dispose.Add(en);
 
                             Refresh();
 
-                            return;
+                            //return;
                         }
                     }
                     else
@@ -601,7 +606,7 @@ namespace Dodge_Game
                             {
                                 en.health--;
 
-                                if (en.type!="deflector")
+                                if (en.type!="deflector" && en.type!= "armored")
                                 {
 
                                     if (en.health <= 0)
@@ -609,9 +614,9 @@ namespace Dodge_Game
 
                                         changeScore(1);
 
-                                        enemyList.Remove(en);
+                                        dispose.Add(en);
 
-                                        Refresh();
+                                        //Refresh();
 
                                     }
 
@@ -625,16 +630,38 @@ namespace Dodge_Game
 
                                     }
 
-                                    ballList.Remove(b);
+                                    dispose.Add(b);
 
-                                    return;
+                                    //return;
                                 }
                                 else
                                 {
+                                    if (en.health <= 0)
+                                    {
+
+                                        changeScore(2);
+
+                                        dispose.Add(en);
+
+                                        //Refresh();
+
+                                    }
+
                                     b.IsFriendly = false;
 
-                                    b.velX = (player.X - en.body.X) * 2;
-                                    b.velY = (player.Y - en.body.Y) * 2;
+                                    b.velX = -b.velX + en.Xvel;
+                                    b.velY = -b.velY + en.Yvel;
+
+                                    for (int i = 1; i < rand.Next(5, 10); i++)
+                                    {
+                                        int size = rand.Next(5, 10);
+
+                                        Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size / 4, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Gold);
+
+                                        particles.Add(p);
+
+                                    }
+
                                 }
 
 
@@ -667,6 +694,10 @@ namespace Dodge_Game
                                 FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false);
 
                             }
+                            else if(en.type == "armored")
+                            {
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (10 * Form1.difficulty), LaunchX, LaunchY, false);
+                            }
 
 
                         }
@@ -692,10 +723,10 @@ namespace Dodge_Game
                         {
                             changeScore(change);
 
-                            ballList.Remove(b);
+                            dispose.Add(b);
                             Refresh();
 
-                            return;
+                            //return;
                         }
                         else
                         {
@@ -707,6 +738,17 @@ namespace Dodge_Game
 
                                 parry.Load();
                                 parry.Play();
+
+                                for (int i = 1; i < rand.Next(5, 10); i++)
+                                {
+                                    int size = rand.Next(5, 10);
+
+                                    Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size/4, player.X + player.Width / 2, player.Y + player.Height / 2, 255, size, Color.Gold);
+
+                                    particles.Add(p);
+
+                                }
+
                                 b.IsFriendly = true;
                                 b.isHit = false;
                                 b.velX = playerVelX*2;
@@ -714,9 +756,9 @@ namespace Dodge_Game
                             }
                             else
                             {
-                                ballList.Remove(b);
-                                Refresh();
-                                return;
+                                dispose.Add(b);
+                                //Refresh();
+                                //return;
                             }
 
                         }
@@ -733,7 +775,7 @@ namespace Dodge_Game
 
                     if (p.color.A <= 0)
                     {
-                        todestroy.Add(p);
+                        dispose.Add(p);
                     }
                 }
 
@@ -764,6 +806,10 @@ namespace Dodge_Game
                                 playerImmune = true;
 
                                 changeScore(-1);
+
+                                l.hitboxes.Remove(h);
+
+                                return;
                             }
                         }
 
@@ -787,13 +833,24 @@ namespace Dodge_Game
                 //
                 // Clean Particles
                 //
-                foreach (Particle p in todestroy)
+                foreach (object i in dispose)
                 {
-                    if (particles.Contains(p))
+
+                    if (lazers.Contains(i))
                     {
-
-                        particles.Remove(p);
-
+                        lazers.Remove((Lazer)i);
+                    }
+                    else if(particles.Contains(i))
+                    {
+                        particles.Remove((Particle)i);
+                    }
+                    else if(ballList.Contains(i))
+                    {
+                        ballList.Remove((Ball)i);
+                    }
+                    else if(enemyList.Contains(i))
+                    {
+                        enemyList.Remove((Enemy)i);
                     }
                 }
 
