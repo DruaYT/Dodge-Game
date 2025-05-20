@@ -44,7 +44,7 @@ namespace Dodge_Game
                 {
                     RectangleF hit = new RectangleF();
 
-                    hit.Location = new PointF(point0.X+(point0.X + point1.X) / (i * lwidth), point0.Y+(point0.Y + point1.Y)/(i*lwidth));
+                    hit.Location = new PointF(point0.X + (point1.X / i), point0.Y + (point1.Y / i));
 
                     hit.Width = lwidth;
                     hit.Height = lwidth;

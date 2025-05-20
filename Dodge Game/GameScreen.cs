@@ -105,27 +105,34 @@ namespace Dodge_Game
             r.X = rand.Next(20, this.Width - 20);
             r.Y = rand.Next(20, this.Width - 20);
 
-            if (rand.Next(1, 100) <= 1 * Form1.difficulty)
+            int nm = ((score) / (10 - Form1.difficulty));
+
+            if (rand.Next(1, 100) <= 2 * nm)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
+                enemyList.Add(n);
+            }
+            if (rand.Next(1, 100) <= 5 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "armored");
                 enemyList.Add(n);
             }
-            else if (rand.Next(1, 100) <= 5 * Form1.difficulty)
+            else if (rand.Next(1, 100) <= 7 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gunner");
                 enemyList.Add(n);
             }
-            else if (rand.Next(1, 100) <= 7 * Form1.difficulty)
+            else if (rand.Next(1, 100) <= 12 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "deflector");
                 enemyList.Add(n);
             }
-            else if (rand.Next(1, 100) <= 10 * Form1.difficulty)
+            else if (rand.Next(1, 100) <= 15 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "buckshot");
                 enemyList.Add(n);
             }
-            else if (rand.Next(1, 100) <= 12 * Form1.difficulty)
+            else if (rand.Next(1, 100) <= 20 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "lazer");
                 enemyList.Add(n);
@@ -139,14 +146,14 @@ namespace Dodge_Game
             
         }
 
-        private void changeScore(int _change)
+        private void changeScore(int _change, bool melee)
         {
 
             if (_change > 0)
             {
                 score += _change;
 
-                if (_change > 1)
+                if (melee == true)
                 {
                     lives++;
                 }
@@ -400,6 +407,8 @@ namespace Dodge_Game
         private void gameTimer_Tick(object sender, EventArgs e)
         {
 
+            shootCooldownBase = (int)(10 * (Form1.difficulty / Math.Ceiling(((1+score) * 0.01))));
+
             dispose.Clear();
 
             if (IsPaused == false)
@@ -411,7 +420,7 @@ namespace Dodge_Game
                     AddEnemy();
                 }
 
-                if ((tick % 100 == 0) && rand.Next(1, 100) <= Form1.difficulty * 10)
+                if ((tick % Math.Ceiling((decimal)(1000/(1 + score))) == 0) && rand.Next(1, 100) <= Form1.difficulty * 10)
                 {
                     AddEnemy();
                 }
@@ -552,7 +561,7 @@ namespace Dodge_Game
                     {
                         if (change < 0)
                         {
-                            changeScore(change);
+                            changeScore(change, false);
                         }
                         else
                         {
@@ -566,7 +575,7 @@ namespace Dodge_Game
 
                             }
 
-                            changeScore(change);
+                            changeScore(change, true);
                             dispose.Add(en);
 
                             Refresh();
@@ -606,13 +615,13 @@ namespace Dodge_Game
                             {
                                 en.health--;
 
-                                if (en.type!="deflector" && en.type!= "armored")
+                                if (en.type!="deflector" && en.type!= "armored" && en.type != "gatlinggunner")
                                 {
 
                                     if (en.health <= 0)
                                     {
 
-                                        changeScore(1);
+                                        changeScore(1, false);
 
                                         dispose.Add(en);
 
@@ -639,7 +648,7 @@ namespace Dodge_Game
                                     if (en.health <= 0)
                                     {
 
-                                        changeScore(2);
+                                        changeScore(1, true);
 
                                         dispose.Add(en);
 
@@ -677,7 +686,7 @@ namespace Dodge_Game
                             if (en.type == "lazer")
                             {
 
-                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 100, LaunchY * 100, false);
+                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false);
 
                             }
                             else if(en.type == "normal")
@@ -707,6 +716,14 @@ namespace Dodge_Game
                             FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false);
 
                         }
+                        else if (en.type == "gatlinggunner" && tick % 10 == 0)
+                        {
+
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX, LaunchY, false);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX - 50, LaunchY - 50, false);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false);
+
+                        }
 
                     }
                 }
@@ -721,7 +738,7 @@ namespace Dodge_Game
                     {
                         if (change != 2 && playerImmune != true)
                         {
-                            changeScore(change);
+                            changeScore(change, false);
 
                             dispose.Add(b);
                             Refresh();
@@ -805,7 +822,7 @@ namespace Dodge_Game
                             {
                                 playerImmune = true;
 
-                                changeScore(-1);
+                                changeScore(-1, false);
 
                                 l.hitboxes.Remove(h);
 
@@ -901,7 +918,7 @@ namespace Dodge_Game
 
             gameTimer.Enabled = true;
 
-            changeScore(1);
+            changeScore(1, false);
         }
     }
 }
