@@ -55,6 +55,15 @@ namespace Dodge_Game
 
                     break;
 
+                case "incinerator":
+                    body.Width = 65;
+                    body.Height = 65;
+                    health = 10;
+                    speed = 2;
+                    color = Color.Purple;
+
+                    break;
+
                 case "lazer":
                     body.Width = 40;
                     body.Height = 40;

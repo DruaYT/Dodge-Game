@@ -29,6 +29,8 @@ namespace Dodge_Game
 
         List<Particle> particles = new List<Particle>();
 
+        List<PowerUp> powerUps = new List<PowerUp>();
+
         List<object> dispose = new List<object>();
 
         RectangleF player;
@@ -43,8 +45,11 @@ namespace Dodge_Game
 
         float playerVelX, playerVelY;
 
-        int score, lives, currentCooldown, currentShootCooldown, tick;
+        int score, lives, currentCooldown, currentShootCooldown, tick, powerUpTimer;
+
         int cooldownTickBase = 10, shootCooldownBase = 10*Form1.difficulty;
+
+        string powerUp = "None";
 
         private void buttonMenu_Click(object sender, EventArgs e)
         {
@@ -102,15 +107,24 @@ namespace Dodge_Game
         {
             RectangleF r = new RectangleF();
 
-            r.X = rand.Next(20, this.Width - 20);
-            r.Y = rand.Next(20, this.Width - 20);
+            r.X = player.X + rand.Next((int)(this.Width - player.X)/10, (int)(this.Width - player.X));
+            r.Y = player.Y + rand.Next((int)(this.Height - player.Y)/10, (int)(this.Height - player.Y));
 
             int nm = ((score) / (10 - Form1.difficulty));
 
             if (rand.Next(1, 100) <= 2 * nm)
             {
-                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
-                enemyList.Add(n);
+                if (rand.Next(1,2) == 1)
+                {
+                    Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
+                    enemyList.Add(n);
+                }
+                else
+                {
+                    Enemy n = new Enemy(new PointF(r.X, r.Y), r, "incinerator");
+                    enemyList.Add(n);
+                }
+                    
             }
             if (rand.Next(1, 100) <= 5 * nm)
             {
@@ -146,6 +160,36 @@ namespace Dodge_Game
             
         }
 
+        private void AddPowerUp()
+        {
+
+            float X = player.X + rand.Next((int)(this.Width - player.X) / 10, (int)(this.Width - player.X));
+            float Y = player.Y + rand.Next((int)(this.Height - player.Y) / 10, (int)(this.Height - player.Y));
+
+            if (rand.Next(1,100) <= 5/Form1.difficulty)
+            {
+                PowerUp p = new PowerUp(new PointF(X, Y), "lazer");
+                powerUps.Add(p);
+            }
+            else if (rand.Next(1, 100) <= 15 / Form1.difficulty)
+            {
+                PowerUp p = new PowerUp(new PointF(X, Y), "shotgun");
+                powerUps.Add(p);
+            }
+            else if (rand.Next(1, 100) <= 25 / Form1.difficulty)
+            {
+                PowerUp p = new PowerUp(new PointF(X, Y), "gunner");
+                powerUps.Add(p);
+            }
+            else
+            {
+                PowerUp p = new PowerUp(new PointF(X, Y), "heal");
+                powerUps.Add(p);
+            }
+
+        }
+
+
         private void changeScore(int _change, bool melee)
         {
 
@@ -163,6 +207,9 @@ namespace Dodge_Game
                 if (_change < 0)
                 {
                     lives--;
+
+                    powerUp = "None";
+
                     this.BackColor = Color.Red;
                     SoundPlayer h = new SoundPlayer(Properties.Resources.sound_Hit);
 
@@ -208,10 +255,24 @@ namespace Dodge_Game
 
             foreach (Enemy enemy in enemyList) 
             {
+
                 if (enemy != null) 
                 {
                     e.Graphics.FillEllipse(new SolidBrush(enemy.color), enemy.body);
                 }  
+
+            }
+
+            foreach (PowerUp u in powerUps)
+            {
+
+                if (u != null)
+                {
+
+                    e.Graphics.FillRectangle(new SolidBrush(u.color), u.body);
+
+                }
+
             }
 
             foreach(Particle p in particles)
@@ -226,23 +287,34 @@ namespace Dodge_Game
             {
                 if (l != null)
                 {
-                    if (l.IsWarning == true) 
+                    Color c;
+
+                    if (l.IsFriendly == true)
+                    {
+                        c = Color.Blue;
+                    }
+                    else 
+                    { 
+                        c = Color.Red;
+                    }
+
+                    if (l.IsWarning == true)
                     {
                         e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb(150, Color.Pink)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
                     }
                     else
                     {
-                        e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb( 255/Math.Abs(1+((l.totalduration - l.duration)/l.totalduration ) ) , Color.Red)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
-                        if (Debug==true)
+                        e.Graphics.DrawLine(new Pen(new SolidBrush(Color.FromArgb(255 / Math.Abs(1 + ((l.totalduration - l.duration) / l.totalduration)), c)), l.lwidth), l.point0.X, l.point0.Y, l.point1.X, l.point1.Y);
+                        if (Debug == true)
                         {
-                            foreach(RectangleF h in l.hitboxes)
+                            foreach (RectangleF h in l.hitboxes)
                             {
 
-                                if (h!=null)
+                                if (h != null)
                                 {
                                     e.Graphics.FillEllipse(new SolidBrush(Color.White), h);
                                 }
-                                
+
                             }
                         }
                     }
@@ -392,7 +464,16 @@ namespace Dodge_Game
                     PointF p0 = new PointF(pos.X, pos.Y);
                     PointF p1 = new PointF(velX * 100, velY * 100);
 
-                    Lazer l = new Lazer(p0, p1, (int)size, 5 * Form1.difficulty, 50 / Form1.difficulty);
+                    Lazer l;
+
+                    if (IsFriendly == true)
+                    {
+                        l = new Lazer(p0, p1, (int)size, 5, 1, true);
+                    }
+                    else
+                    {
+                        l = new Lazer(p0, p1, (int)size, 5 * Form1.difficulty, 50 / Form1.difficulty, false);
+                    }
 
                     l.IsWarning = true;
 
@@ -424,8 +505,12 @@ namespace Dodge_Game
                 {
                     AddEnemy();
                 }
+                else if(tick % 100 == 0 && rand.Next(1,10) <= (10/Form1.difficulty))
+                {
+                    AddPowerUp();
+                }
 
-                flashCheck();
+                    flashCheck();
                 mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
                 mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
 
@@ -461,12 +546,34 @@ namespace Dodge_Game
                         shoot.LoadTimeout = 1;
                         shoot.Play();
 
-                        currentShootCooldown = shootCooldownBase;
+                        if (powerUp == "gunner")
+                        {
+                            currentShootCooldown = shootCooldownBase/5;
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                        }
+                        else
+                        {
+                            currentShootCooldown = shootCooldownBase;
+                        }
 
-                        FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height/1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                        if (powerUp == "None")
+                        {
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                        }
+                        else if (powerUp == "shotgun")
+                        {
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X + 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y + 50), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X - 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y - 50), true);
+                        }
+                        else if(powerUp == "lazer")
+                        {
+                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                        }
 
-                        playerVelX += ((player.X + (player.Width / 2)) - mousePos.X) / 10;
-                        playerVelY += ((player.Y + (player.Height / 2)) - mousePos.Y) / 10;
+
+                        playerVelX += ((player.X + (player.Width / 2)) - mousePos.X) / 100;
+                        playerVelY += ((player.Y + (player.Height / 2)) - mousePos.Y) / 100;
                     }
                 }
                 else
@@ -561,7 +668,9 @@ namespace Dodge_Game
                     {
                         if (change < 0)
                         {
+
                             changeScore(change, false);
+ 
                         }
                         else
                         {
@@ -575,7 +684,7 @@ namespace Dodge_Game
 
                             }
 
-                            changeScore(change, true);
+                            changeScore(change, false);
                             dispose.Add(en);
 
                             Refresh();
@@ -615,7 +724,7 @@ namespace Dodge_Game
                             {
                                 en.health--;
 
-                                if (en.type!="deflector" && en.type!= "armored" && en.type != "gatlinggunner")
+                                if (en.type!="deflector" && en.type!= "armored" && en.type != "gatlinggunner" && en.type != "incinerator")
                                 {
 
                                     if (en.health <= 0)
@@ -677,6 +786,24 @@ namespace Dodge_Game
                             }
                         }
 
+                        foreach (Lazer l in lazers)
+                        {
+                            if (l.IsFriendly == true && l.IsWarning == false)
+                            {
+                                foreach (RectangleF h in l.hitboxes)
+                                {
+                                    if (h.IntersectsWith(en.body))
+                                    {
+                                        en.health--;
+
+                                        l.hitboxes.Remove(h);
+
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+
                         float LaunchX = (player.X - en.body.X) * 2;
                         float LaunchY = (player.Y - en.body.Y) * 2;
 
@@ -716,12 +843,56 @@ namespace Dodge_Game
                             FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false);
 
                         }
-                        else if (en.type == "gatlinggunner" && tick % 10 == 0)
+                        else if (en.type == "gatlinggunner" && tick % (50/Form1.difficulty) == 0)
                         {
 
                             FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX, LaunchY, false);
                             FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX - 50, LaunchY - 50, false);
                             FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false);
+
+                        }
+                        else if (en.type == "incinerator" && tick % (50 / Form1.difficulty) == 0)
+                        {
+
+                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false);
+                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), (LaunchX - 50) * 10, (LaunchY-50) * 10, false);
+                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), (LaunchX + 50) * 10, (LaunchY + 50) * 10, false);
+
+                        }
+
+                    }
+                }
+
+                //
+                // Power Up Update
+                //
+                foreach (PowerUp p in powerUps)
+                {
+                    bool collected = p.CheckForGathered(player);
+
+                    if (collected == true)
+                    {
+                        if (p.type == "heal")
+                        {
+                            lives += 2;
+                        }
+                        else
+                        {
+                            powerUp = p.type;
+                        }
+
+                        dispose.Add(p);
+                    }
+                    else
+                    {
+                        if (tick % 10 == 0)
+                        {
+
+                            int size = rand.Next(5, 10);
+
+                            Particle n = new Particle( rand.Next(-180, 180) / size, rand.Next(-180, 180) / size, (float)size, p.body.X + p.body.Width / 2, p.body.Y + p.body.Height / 2, 255, size, p.color);
+
+                            particles.Add(n);
 
                         }
 
@@ -818,7 +989,7 @@ namespace Dodge_Game
 
                         foreach (RectangleF h in l.hitboxes)
                         {
-                            if (h.IntersectsWith(player) && playerImmune == false)
+                            if (l.IsFriendly == false && h.IntersectsWith(player) && playerImmune == false)
                             {
                                 playerImmune = true;
 
@@ -868,6 +1039,10 @@ namespace Dodge_Game
                     else if(enemyList.Contains(i))
                     {
                         enemyList.Remove((Enemy)i);
+                    }
+                    else if (powerUps.Contains(i))
+                    {
+                        powerUps.Remove((PowerUp)i);
                     }
                 }
 

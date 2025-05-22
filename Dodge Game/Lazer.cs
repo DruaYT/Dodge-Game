@@ -11,13 +11,13 @@ namespace Dodge_Game
     {
         public PointF point0, point1;
         public int lwidth, defaultwidth, duration, totalduration, warnTime;
-        public bool IsWarning;
+        public bool IsWarning, IsFriendly;
         public Line body;
         Line line;
 
         public List<RectangleF> hitboxes = new List<RectangleF>();
 
-        public Lazer(PointF _point0, PointF _point1, int _width, int _duration, int _warntime) 
+        public Lazer(PointF _point0, PointF _point1, int _width, int _duration, int _warntime, bool _friendly) 
         {
             point0 = _point0;
             point1 = _point1;
@@ -25,6 +25,7 @@ namespace Dodge_Game
             defaultwidth = _width;
             duration = _duration;
             warnTime = _warntime;
+            IsFriendly = _friendly;
 
             totalduration = duration;
 
