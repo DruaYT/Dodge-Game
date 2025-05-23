@@ -27,7 +27,7 @@ namespace Dodge_Game
             body = new RectangleF();
 
             body.Location = pos;
-            body.Size = new Size(10, 10);
+            body.Size = new Size(20, 20);
 
             switch (type)
             {

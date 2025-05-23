@@ -107,26 +107,32 @@ namespace Dodge_Game
         {
             RectangleF r = new RectangleF();
 
-            r.X = player.X + rand.Next((int)(this.Width - player.X)/10, (int)(this.Width - player.X));
-            r.Y = player.Y + rand.Next((int)(this.Height - player.Y)/10, (int)(this.Height - player.Y));
+            if (rand.Next(1, 2) == 2)
+            {
+                r.X = player.X + rand.Next((int)(this.Width - player.X) / 10, (int)(this.Width - player.X) / 2);
+                r.Y = player.Y + rand.Next((int)(this.Height - player.Y) / 10, (int)(this.Height - player.Y) / 2);
+            }
+            else
+            {
+                r.X = player.X + rand.Next((int)(player.X) / 10, (int)(player.X / 2));
+                r.Y = player.Y + rand.Next((int)(player.Y) / 10, (int)(player.Y / 2));
+            }
+
+            
 
             int nm = ((score) / (10 - Form1.difficulty));
 
-            if (rand.Next(1, 100) <= 2 * nm)
+            if (rand.Next(1, 100) <= 1 * nm)
             {
-                if (rand.Next(1,2) == 1)
-                {
-                    Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
-                    enemyList.Add(n);
-                }
-                else
-                {
-                    Enemy n = new Enemy(new PointF(r.X, r.Y), r, "incinerator");
-                    enemyList.Add(n);
-                }
-                    
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "incinerator");
+                enemyList.Add(n);
             }
-            if (rand.Next(1, 100) <= 5 * nm)
+            else if (rand.Next(1, 100) <= 2 * nm)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
+                enemyList.Add(n);
+            }
+            else if (rand.Next(1, 100) <= 5 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "armored");
                 enemyList.Add(n);
@@ -163,8 +169,8 @@ namespace Dodge_Game
         private void AddPowerUp()
         {
 
-            float X = player.X + rand.Next((int)(this.Width - player.X) / 10, (int)(this.Width - player.X));
-            float Y = player.Y + rand.Next((int)(this.Height - player.Y) / 10, (int)(this.Height - player.Y));
+            float X = player.X + rand.Next((int)(this.Width - player.X) / 10, (int)(this.Width - player.X /1.5));
+            float Y = player.Y + rand.Next((int)(this.Height - player.Y) / 10, (int)(this.Height - player.Y /1.5));
 
             if (rand.Next(1,100) <= 5/Form1.difficulty)
             {
@@ -207,6 +213,8 @@ namespace Dodge_Game
                 if (_change < 0)
                 {
                     lives--;
+
+                    Emmit(new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 5, 10, "blood");
 
                     powerUp = "None";
 
@@ -468,7 +476,7 @@ namespace Dodge_Game
 
                     if (IsFriendly == true)
                     {
-                        l = new Lazer(p0, p1, (int)size, 5, 1, true);
+                        l = new Lazer(p0, p1, (int)size, 10, 1, true);
                     }
                     else
                     {
@@ -482,6 +490,41 @@ namespace Dodge_Game
                     break;
 
 
+            }
+        }
+
+        private void Emmit(PointF pos, int ammount, int maxsize, String type)
+        {
+
+            switch (type)
+            {
+                case "blood":
+
+                    for (int i = 1; i < ammount; i++)
+                    {
+                        int size = rand.Next(7, maxsize);
+
+                        Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size / 5, pos.X, pos.Y, 255, size, Color.Red);
+
+                        particles.Add(p);
+
+                    }
+
+                    break;
+
+                case "parry":
+
+                    for (int i = 1; i < ammount; i++)
+                    {
+                        int size = rand.Next(5, maxsize);
+
+                        Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size / 6, pos.X, pos.Y, 255, size, Color.Gold);
+
+                        particles.Add(p);
+
+                    }
+
+                    break;
             }
         }
 
@@ -501,11 +544,11 @@ namespace Dodge_Game
                     AddEnemy();
                 }
 
-                if ((tick % Math.Ceiling((decimal)(1000/(1 + score))) == 0) && rand.Next(1, 100) <= Form1.difficulty * 10)
+                if ((tick % Math.Ceiling((decimal)(1000/(1 + score))) == 0) && rand.Next(1, 100) <= Form1.difficulty)
                 {
                     AddEnemy();
                 }
-                else if(tick % 100 == 0 && rand.Next(1,10) <= (10/Form1.difficulty))
+                else if(tick % 100 == 0 && rand.Next(1,10) <= (50/Form1.difficulty)/(1 + powerUps.Count()))
                 {
                     AddPowerUp();
                 }
@@ -568,7 +611,7 @@ namespace Dodge_Game
                         }
                         else if(powerUp == "lazer")
                         {
-                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
                         }
 
 
@@ -674,15 +717,8 @@ namespace Dodge_Game
                         }
                         else
                         {
-                            for (int i = 1; i < rand.Next(5, 10); i++)
-                            {
-                                int size = rand.Next(5, 15);
 
-                                Particle p = new Particle((rand.Next(-45, 45) + playerVelX) * 10 / size, (rand.Next(-45, 45) + playerVelY) * 10 / size, (float)size, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Red);
-
-                                particles.Add(p);
-
-                            }
+                            Emmit(new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), 10, 20, "blood");
 
                             changeScore(change, false);
                             dispose.Add(en);
@@ -738,15 +774,7 @@ namespace Dodge_Game
 
                                     }
 
-                                    for (int i = 1; i < rand.Next(5, 10); i++)
-                                    {
-                                        int size = rand.Next(5, 15);
-
-                                        Particle p = new Particle(rand.Next(-180, 180) / size, rand.Next(-180, 180) / size, (float)size, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Red);
-
-                                        particles.Add(p);
-
-                                    }
+                                    Emmit(new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), 10, 20, "blood");
 
                                     dispose.Add(b);
 
@@ -757,7 +785,7 @@ namespace Dodge_Game
                                     if (en.health <= 0)
                                     {
 
-                                        changeScore(1, true);
+                                        changeScore(1, false);
 
                                         dispose.Add(en);
 
@@ -770,15 +798,7 @@ namespace Dodge_Game
                                     b.velX = -b.velX + en.Xvel;
                                     b.velY = -b.velY + en.Yvel;
 
-                                    for (int i = 1; i < rand.Next(5, 10); i++)
-                                    {
-                                        int size = rand.Next(5, 10);
-
-                                        Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size / 4, en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2, 255, size, Color.Gold);
-
-                                        particles.Add(p);
-
-                                    }
+                                    Emmit(new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), 10, 10, "parry");
 
                                 }
 
@@ -807,7 +827,7 @@ namespace Dodge_Game
                         float LaunchX = (player.X - en.body.X) * 2;
                         float LaunchY = (player.Y - en.body.Y) * 2;
 
-                        if (rand.Next(0, 100) <= Form1.difficulty * 15 && rand.Next(0, 100) % 10 == 1)
+                        if (rand.Next(0, 100) <= Form1.difficulty * 15 && tick % 20 == 1)
                         {
                             
                             if (en.type == "lazer")
