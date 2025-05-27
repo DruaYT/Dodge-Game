@@ -16,6 +16,7 @@ using System.Resources;
 using System.Reflection;
 using System.Windows.Documents;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using System.Security.Policy;
 
 namespace Dodge_Game
 {
@@ -78,6 +79,16 @@ namespace Dodge_Game
         }
 
         int playerTeminalVelocity = 10;
+
+        public SizeF SizeRatio(float sizeX, float sizeY)
+        {
+            return new SizeF(this.Width*(sizeX/1920), this.Height*(sizeY/1080));
+        }
+
+        public PointF TranslateRatio(float moveX, float moveY)
+        {
+            return new PointF(this.Width * (moveX / 1920), this.Height * (moveY / 1080));
+        }
 
         public GameScreen()
         {
@@ -221,7 +232,7 @@ namespace Dodge_Game
                     this.BackColor = Color.Red;
                     SoundPlayer h = new SoundPlayer(Properties.Resources.sound_Hit);
 
-                    currentCooldown = cooldownTickBase * 3;
+                    currentCooldown = (int)(cooldownTickBase * 1.2);
 
                     h.PlaySync();
                     Refresh();
@@ -452,26 +463,31 @@ namespace Dodge_Game
 
                     float rvelX, rvelY;
 
-                    if (velX > 0)
-                    {
-                        rvelX = (float)(bulletSpeed * Math.Cos(_ang));
-                    }
-                    else
-                    {
-                        rvelX = (float)(bulletSpeed * Math.Sin(_ang));
-                    }
-
-                    if (velY > 0)
+                    if (velY >= 0 && velX >= 0) // (+,+)
                     {
                         rvelY = (float)(bulletSpeed * Math.Sin(_ang));
-                    }
-                    else
-                    {
-                        rvelY = (float)(bulletSpeed * Math.Cos(_ang));
-                    }
-                    
 
-                    
+                        rvelX = (float)(bulletSpeed * Math.Cos(_ang));
+                    }
+                    else if (velY >= 0 && velX < 0) // (-,+)
+                    {
+                        rvelY = (float)(bulletSpeed * -Math.Sin(_ang));
+
+                        rvelX = (float)(bulletSpeed * -Math.Cos(_ang));
+                    }
+                    else if (velY < 0 && velX >= 0) // (+,-)
+                    {
+                        rvelY = (float)(bulletSpeed * Math.Sin(_ang));
+
+                        rvelX = (float)(bulletSpeed * Math.Cos(_ang));
+                    }
+                    else //(-,-)
+                    {
+                        rvelY = (float)(bulletSpeed * -Math.Sin(_ang));
+
+                        rvelX = (float)(bulletSpeed * -Math.Cos(_ang));
+                    }
+
 
                     Emmit(pos, rand.Next(3, 6), (int)size, "smoke", new PointF((velX + rand.Next(-180, 180)), (velY + rand.Next(-180, 180))));
 
@@ -588,7 +604,7 @@ namespace Dodge_Game
                     AddEnemy();
                 }
 
-                if ((tick % Math.Ceiling((decimal)(1000/(1 + score))) == 0) && rand.Next(1, 100) <= Form1.difficulty)
+                if ((tick % Math.Ceiling((decimal)(10000/(1 + score))) == 0) && rand.Next(1, 100) <= Math.Pow(Form1.difficulty, 2))
                 {
                     AddEnemy();
                 }
@@ -597,7 +613,7 @@ namespace Dodge_Game
                     AddPowerUp();
                 }
 
-                    flashCheck();
+                flashCheck();
                 mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
                 mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
 
@@ -1147,7 +1163,7 @@ namespace Dodge_Game
 
             pauseLabel.Visible = false;
 
-            bulletSpeed = 30 * Form1.difficulty;
+            bulletSpeed = 200 * (float)Math.Pow(Form1.difficulty , 2);
 
             player.Size = new Size(15,15);
             player.Location = new Point((this.Width/2) - 5, (this.Height/2) - 5);
