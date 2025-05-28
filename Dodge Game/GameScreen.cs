@@ -40,7 +40,7 @@ namespace Dodge_Game
 
         Random rand = new Random();
 
-        bool Debug = false;
+        readonly bool Debug = false;
 
         bool heldUp, heldDown, heldLeft, heldRight, playerImmune, LeftMouseDown, CanPause, IsPaused;
 
@@ -137,41 +137,57 @@ namespace Dodge_Game
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "incinerator");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else if (rand.Next(1, 100) <= 2 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else if (rand.Next(1, 100) <= 5 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "armored");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else if (rand.Next(1, 100) <= 7 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gunner");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else if (rand.Next(1, 100) <= 12 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "deflector");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else if (rand.Next(1, 100) <= 15 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "buckshot");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else if (rand.Next(1, 100) <= 20 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "lazer");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
             else
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
                 enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
 
             
@@ -187,21 +203,29 @@ namespace Dodge_Game
             {
                 PowerUp p = new PowerUp(new PointF(X, Y), "lazer");
                 powerUps.Add(p);
+
+                p.body.Size = SizeRatio(p.body.Width, p.body.Height);
             }
             else if (rand.Next(1, 100) <= 15 / Form1.difficulty)
             {
                 PowerUp p = new PowerUp(new PointF(X, Y), "shotgun");
                 powerUps.Add(p);
+
+                p.body.Size = SizeRatio(p.body.Width, p.body.Height);
             }
             else if (rand.Next(1, 100) <= 25 / Form1.difficulty)
             {
                 PowerUp p = new PowerUp(new PointF(X, Y), "gunner");
                 powerUps.Add(p);
+
+                p.body.Size = SizeRatio(p.body.Width, p.body.Height);
             }
             else
             {
                 PowerUp p = new PowerUp(new PointF(X, Y), "heal");
                 powerUps.Add(p);
+
+                p.body.Size = SizeRatio(p.body.Width, p.body.Height);
             }
 
         }
@@ -453,7 +477,7 @@ namespace Dodge_Game
                 case "bullet":
                     RectangleF b = new RectangleF
                     {
-                        Size = new SizeF(size, size),
+                        Size = SizeRatio(size, size),
                         Location = pos
                     };
 
@@ -488,11 +512,12 @@ namespace Dodge_Game
                         rvelX = (float)(bulletSpeed * -Math.Cos(_ang));
                     }
 
+                    PointF velN = TranslateRatio(rvelX, rvelY);
 
                     Emmit(pos, rand.Next(3, 6), (int)size, "smoke", new PointF((velX + rand.Next(-180, 180)), (velY + rand.Next(-180, 180))));
 
 
-                    Ball ball = new Ball(rvelX, rvelY, b, IsFriendly);
+                    Ball ball = new Ball(velN.X, velN.Y, b, IsFriendly);
 
                     ballList.Add(ball);
 
@@ -501,7 +526,8 @@ namespace Dodge_Game
                 case "lazer":
 
                     PointF p0 = new PointF(pos.X, pos.Y);
-                    PointF p1 = new PointF(velX * 100, velY * 100);
+
+                    PointF p1 = TranslateRatio(velX * (this.Width - pos.X)/size, velY * (this.Height - pos.Y)/size);
 
                     Lazer l;
 
@@ -535,7 +561,9 @@ namespace Dodge_Game
                     {
                         int size = rand.Next(7, maxsize);
 
-                        Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size / 5, pos.X, pos.Y, 255, size, Color.Red);
+                        SizeF s = SizeRatio(size, size);
+
+                        Particle p = new Particle(rand.Next(-360, 360) / s.Width, rand.Next(-360, 360) / s.Height, (float)size / (5), pos.X, pos.Y, 255, s.Width, Color.Red);
 
                         particles.Add(p);
 
@@ -549,21 +577,9 @@ namespace Dodge_Game
                     {
                         int size = rand.Next(5, maxsize);
 
-                        Particle p = new Particle(rand.Next(-360, 360) / size, rand.Next(-360, 360) / size, (float)size / 6, pos.X, pos.Y, 255, size, Color.Gold);
+                        SizeF s = SizeRatio(size, size);
 
-                        particles.Add(p);
-
-                    }
-
-                    break;
-
-                case "lazer":
-
-                    for (int i = 1; i < ammount; i++)
-                    {
-                        int size = rand.Next(20, maxsize);
-
-                        Particle p = new Particle(vel.X / size, vel.Y / size, (float)size / 5, pos.X, pos.Y, 255, size, Color.White);
+                        Particle p = new Particle(rand.Next(-360, 360) / s.Width, rand.Next(-360, 360) / s.Height, (float)size / (6), pos.X, pos.Y, 255, s.Width, Color.Gold);
 
                         particles.Add(p);
 
@@ -578,7 +594,9 @@ namespace Dodge_Game
 
                         int size = rand.Next(10, 12 + maxsize);
 
-                        Particle p = new Particle(vel.X / size, vel.Y / size, (float)size / 10, pos.X, pos.Y, 255, size, Color.LightGray);
+                        SizeF s = SizeRatio(size, size);
+
+                        Particle p = new Particle(vel.X / s.Width, vel.Y / s.Height, (float)size / (7), pos.X, pos.Y, 255, s.Width, Color.LightGray);
 
                         particles.Add(p);
 
@@ -626,10 +644,20 @@ namespace Dodge_Game
                 if (currentCooldown > 0)
                 {
                     playerImmune = true;
+
                     currentCooldown--;
+
                     playerVelX--;
+
                     playerVelY--;
-                    Particle p = new Particle(-playerVelX + rand.Next(-3, 3), -playerVelY + rand.Next(-3,3), (float)2, player.X + (player.Width / 2), player.Y + (player.Height / 2), 150, rand.Next(10, 20), Color.LightGray);
+
+                    float siz = rand.Next(10, 20);
+
+                    SizeF s = SizeRatio(siz, siz);
+
+                    PointF v = TranslateRatio(-playerVelX + rand.Next(-3, 3), -playerVelY + rand.Next(-3, 3));
+
+                    Particle p = new Particle(v.X, v.Y, (float)s.Width / (5), player.X + (player.Width / 2), player.Y + (player.Height / 2), 150, s.Width, Color.LightGray);
                     particles.Add(p);
                 }
                 else
@@ -652,7 +680,7 @@ namespace Dodge_Game
                         if (powerUp == "gunner")
                         {
                             currentShootCooldown = shootCooldownBase/5;
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
                         }
                         else
                         {
@@ -661,17 +689,17 @@ namespace Dodge_Game
 
                         if (powerUp == "None")
                         {
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
                         }
                         else if (powerUp == "shotgun")
                         {
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X + 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y + 50), true);
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height / 1.1), 2 * (-(player.X + (player.Width / 2)) + mousePos.X - 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y - 50), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X + 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y + 50), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X - 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y - 50), true);
                         }
                         else if(powerUp == "lazer")
                         {
-                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)(player.Height), 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
                         }
 
 
@@ -723,8 +751,8 @@ namespace Dodge_Game
                     playerVelX++;
                 }
 
-                player.Y += playerVelY;
-                player.X += playerVelX;
+                player.Y += TranslateRatio(playerVelX, playerVelY).Y;
+                player.X += TranslateRatio(playerVelX, playerVelY).X;
 
                 if (player.X > this.Width)
                 {
@@ -813,6 +841,11 @@ namespace Dodge_Game
                             en.body.Y = 0;
                             en.Yvel /= -2;
                         }
+
+                        PointF mov = TranslateRatio(en.Xvel, en.Yvel);
+
+                        en.body.X += mov.X;
+                        en.body.Y += mov.Y;
 
                         foreach (Ball b in ballList)
                         {
@@ -1045,6 +1078,14 @@ namespace Dodge_Game
                     {
                         dispose.Add(p);
                     }
+                    else
+                    {
+                        PointF mov = TranslateRatio(p.velX, p.velY);
+
+                        p.body.X += mov.X;
+                        p.body.Y += mov.Y;
+
+                    }
                 }
 
                 //
@@ -1075,7 +1116,9 @@ namespace Dodge_Game
 
                                 changeScore(-1, false);
 
-                                l.hitboxes.Remove(h);
+                                l.hitboxes.Clear();
+
+                                Refresh();
 
                                 return;
                             }
@@ -1165,7 +1208,7 @@ namespace Dodge_Game
 
             bulletSpeed = 200 * (float)Math.Pow(Form1.difficulty , 2);
 
-            player.Size = new Size(15,15);
+            player.Size = SizeRatio(15, 15);
             player.Location = new Point((this.Width/2) - 5, (this.Height/2) - 5);
             playerVelX = 0;
             playerVelY = 0;

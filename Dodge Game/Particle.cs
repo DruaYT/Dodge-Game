@@ -33,8 +33,8 @@ namespace Dodge_Game
             {
                 color = Color.FromArgb(color.A - 15, color.R, color.G, color.B);
 
-                body.X += velX;
-                body.Y += velY;
+                //body.X += velX;
+                //body.Y += velY;
 
                 velX = velX / drag;
                 velY = velY / drag;

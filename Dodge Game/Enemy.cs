@@ -116,8 +116,8 @@ namespace Dodge_Game
 
         public int Update(RectangleF player, Form f)
         {
-            body.Y += Yvel;
-            body.X += Xvel;
+           // body.Y += Yvel;
+           // body.X += Xvel;
             PointF diff = new PointF(body.X - player.X, body.Y - player.Y);
 
             if (player.X + diff.X / 2 > body.X && Math.Abs(Xvel + speed) <= terminalVel)
