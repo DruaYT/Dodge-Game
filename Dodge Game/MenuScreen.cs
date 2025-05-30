@@ -46,6 +46,7 @@ namespace Dodge_Game
             buttonInsane.Location = new Point(buttonHard.Location.X, buttonHard.Location.Y + (int)(buttonHard.Height * 1.2));
             buttonExit.Location = new Point(f.Width - buttonExit.Width - 10, f.Height - buttonExit.Height - 10);
             buttonFullScreen.Location = new Point(buttonExit.Location.X, buttonExit.Location.Y - (int)(buttonFullScreen.Height * 1.2));
+            buttonHighScores.Location = new Point(buttonFullScreen.Location.X, buttonFullScreen.Location.Y - (int)(buttonFullScreen.Height * 1.2));
         }
 
         private void MenuScreen_Load(object sender, EventArgs e)
@@ -92,6 +93,14 @@ namespace Dodge_Game
 
             cropComponents();
             Refresh();
+        }
+
+        private void buttonHighScores_Click(object sender, EventArgs e)
+        {
+            HighScoresScreen h = new HighScoresScreen();
+            h.Size = this.FindForm().Size;
+            this.FindForm().Controls.Add(h);
+            this.FindForm().Controls.Remove(this);
         }
     }
 }

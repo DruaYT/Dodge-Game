@@ -617,6 +617,14 @@ namespace Dodge_Game
             {
                 tick++;
 
+                if (score >= 50)
+                {
+                    WinScreen win = new WinScreen();
+                    win.Size = this.FindForm().Size;
+                    this.FindForm().Controls.Add(win);
+                    this.FindForm().Controls.Remove(this);
+                }
+
                 if (enemyList.Count == 0)
                 {
                     AddEnemy();

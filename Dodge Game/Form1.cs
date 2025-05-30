@@ -14,6 +14,14 @@ namespace Dodge_Game
     {
         public static int difficulty;
 
+        public static int highScoreEasy;
+
+        public static int highScoreNormal;
+
+        public static int highScoreHard;
+
+        public static int highScoreInsane;
+
         public Form1()
         {
             InitializeComponent();
