@@ -28,6 +28,38 @@ namespace Dodge_Game
             {
                 labelTitle.Text = "GAME OVER";
             }
+
+            switch (Form1.difficulty)
+            {
+                case 1:
+                    if (score > Form1.highScoreEasy)
+                    {
+                        Form1.highScoreEasy = score;
+                    }
+                    break;
+
+                case 2:
+                    if (score > Form1.highScoreNormal)
+                    {
+                        Form1.highScoreNormal = score;
+                    }
+                    break;
+
+                case 3:
+                    if (score > Form1.highScoreHard)
+                    {
+                        Form1.highScoreHard = score;
+                    }
+                    break;
+
+                case 4:
+                    if (score > Form1.highScoreInsane)
+                    {
+                        Form1.highScoreInsane = score;
+                    }
+                    break;
+            }
+
         }
 
         private void buttonMenu_Click(object sender, EventArgs e)

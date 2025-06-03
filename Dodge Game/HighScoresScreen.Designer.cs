@@ -43,7 +43,7 @@
             this.labelScoreEasy.Location = new System.Drawing.Point(311, 188);
             this.labelScoreEasy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelScoreEasy.Name = "labelScoreEasy";
-            this.labelScoreEasy.Size = new System.Drawing.Size(322, 28);
+            this.labelScoreEasy.Size = new System.Drawing.Size(458, 28);
             this.labelScoreEasy.TabIndex = 13;
             this.labelScoreEasy.Text = "EASY SCORE - 0";
             this.labelScoreEasy.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -83,7 +83,7 @@
             this.labelScoreNormal.Location = new System.Drawing.Point(311, 227);
             this.labelScoreNormal.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelScoreNormal.Name = "labelScoreNormal";
-            this.labelScoreNormal.Size = new System.Drawing.Size(322, 28);
+            this.labelScoreNormal.Size = new System.Drawing.Size(458, 28);
             this.labelScoreNormal.TabIndex = 14;
             this.labelScoreNormal.Text = "NORMAL SCORE - 0";
             this.labelScoreNormal.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -95,7 +95,7 @@
             this.labelScoreHard.Location = new System.Drawing.Point(311, 267);
             this.labelScoreHard.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelScoreHard.Name = "labelScoreHard";
-            this.labelScoreHard.Size = new System.Drawing.Size(322, 28);
+            this.labelScoreHard.Size = new System.Drawing.Size(458, 28);
             this.labelScoreHard.TabIndex = 15;
             this.labelScoreHard.Text = "HARD SCORE - 0";
             this.labelScoreHard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -107,7 +107,7 @@
             this.labelScoreInsane.Location = new System.Drawing.Point(311, 304);
             this.labelScoreInsane.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelScoreInsane.Name = "labelScoreInsane";
-            this.labelScoreInsane.Size = new System.Drawing.Size(322, 28);
+            this.labelScoreInsane.Size = new System.Drawing.Size(458, 28);
             this.labelScoreInsane.TabIndex = 16;
             this.labelScoreInsane.Text = "INSANE SCORE - 0";
             this.labelScoreInsane.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;

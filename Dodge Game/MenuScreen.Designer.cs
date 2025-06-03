@@ -36,6 +36,7 @@
             this.buttonExit = new System.Windows.Forms.Button();
             this.buttonFullScreen = new System.Windows.Forms.Button();
             this.buttonHighScores = new System.Windows.Forms.Button();
+            this.buttonInfiniteMode = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // labelTitle
@@ -59,7 +60,7 @@
             this.buttonEasy.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonEasy.ForeColor = System.Drawing.Color.Lime;
             this.buttonEasy.Location = new System.Drawing.Point(194, 98);
-            this.buttonEasy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonEasy.Margin = new System.Windows.Forms.Padding(2);
             this.buttonEasy.Name = "buttonEasy";
             this.buttonEasy.Size = new System.Drawing.Size(163, 46);
             this.buttonEasy.TabIndex = 1;
@@ -75,7 +76,7 @@
             this.buttonNormal.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonNormal.ForeColor = System.Drawing.Color.Yellow;
             this.buttonNormal.Location = new System.Drawing.Point(194, 157);
-            this.buttonNormal.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonNormal.Margin = new System.Windows.Forms.Padding(2);
             this.buttonNormal.Name = "buttonNormal";
             this.buttonNormal.Size = new System.Drawing.Size(163, 46);
             this.buttonNormal.TabIndex = 2;
@@ -91,7 +92,7 @@
             this.buttonHard.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonHard.ForeColor = System.Drawing.Color.Red;
             this.buttonHard.Location = new System.Drawing.Point(194, 217);
-            this.buttonHard.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonHard.Margin = new System.Windows.Forms.Padding(2);
             this.buttonHard.Name = "buttonHard";
             this.buttonHard.Size = new System.Drawing.Size(163, 46);
             this.buttonHard.TabIndex = 3;
@@ -107,7 +108,7 @@
             this.buttonInsane.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonInsane.ForeColor = System.Drawing.Color.Fuchsia;
             this.buttonInsane.Location = new System.Drawing.Point(194, 277);
-            this.buttonInsane.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonInsane.Margin = new System.Windows.Forms.Padding(2);
             this.buttonInsane.Name = "buttonInsane";
             this.buttonInsane.Size = new System.Drawing.Size(163, 46);
             this.buttonInsane.TabIndex = 4;
@@ -123,7 +124,7 @@
             this.buttonExit.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonExit.ForeColor = System.Drawing.Color.White;
             this.buttonExit.Location = new System.Drawing.Point(452, 325);
-            this.buttonExit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonExit.Margin = new System.Windows.Forms.Padding(2);
             this.buttonExit.Name = "buttonExit";
             this.buttonExit.Size = new System.Drawing.Size(109, 46);
             this.buttonExit.TabIndex = 5;
@@ -139,7 +140,7 @@
             this.buttonFullScreen.Font = new System.Drawing.Font("MS Gothic", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonFullScreen.ForeColor = System.Drawing.Color.White;
             this.buttonFullScreen.Location = new System.Drawing.Point(452, 274);
-            this.buttonFullScreen.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonFullScreen.Margin = new System.Windows.Forms.Padding(2);
             this.buttonFullScreen.Name = "buttonFullScreen";
             this.buttonFullScreen.Size = new System.Drawing.Size(109, 46);
             this.buttonFullScreen.TabIndex = 6;
@@ -163,11 +164,28 @@
             this.buttonHighScores.UseVisualStyleBackColor = true;
             this.buttonHighScores.Click += new System.EventHandler(this.buttonHighScores_Click);
             // 
+            // buttonInfiniteMode
+            // 
+            this.buttonInfiniteMode.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.buttonInfiniteMode.FlatAppearance.BorderSize = 3;
+            this.buttonInfiniteMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonInfiniteMode.Font = new System.Drawing.Font("MS Gothic", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonInfiniteMode.ForeColor = System.Drawing.Color.IndianRed;
+            this.buttonInfiniteMode.Location = new System.Drawing.Point(452, 174);
+            this.buttonInfiniteMode.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonInfiniteMode.Name = "buttonInfiniteMode";
+            this.buttonInfiniteMode.Size = new System.Drawing.Size(109, 46);
+            this.buttonInfiniteMode.TabIndex = 8;
+            this.buttonInfiniteMode.Text = "INFINITE MODE";
+            this.buttonInfiniteMode.UseVisualStyleBackColor = true;
+            this.buttonInfiniteMode.Click += new System.EventHandler(this.buttonInfiniteMode_Click);
+            // 
             // MenuScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
+            this.Controls.Add(this.buttonInfiniteMode);
             this.Controls.Add(this.buttonHighScores);
             this.Controls.Add(this.buttonFullScreen);
             this.Controls.Add(this.buttonExit);
@@ -176,7 +194,7 @@
             this.Controls.Add(this.buttonNormal);
             this.Controls.Add(this.buttonEasy);
             this.Controls.Add(this.labelTitle);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MenuScreen";
             this.Size = new System.Drawing.Size(570, 384);
             this.Load += new System.EventHandler(this.MenuScreen_Load);
@@ -194,5 +212,6 @@
         private System.Windows.Forms.Button buttonExit;
         private System.Windows.Forms.Button buttonFullScreen;
         private System.Windows.Forms.Button buttonHighScores;
+        private System.Windows.Forms.Button buttonInfiniteMode;
     }
 }

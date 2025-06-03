@@ -102,6 +102,25 @@ namespace Dodge_Game
 
                     break;
 
+                case "rocketeer":
+                    speed = 2;
+
+                    body.Width = 50;
+                    body.Height = 50;
+                    health = 10;
+                    color = Color.Lime;
+                    break;
+
+                case "fragmenter":
+                    speed = 1;
+
+                    body.Width = 50;
+                    body.Height = 50;
+                    health = 5;
+                    color = Color.Pink;
+
+                    break;
+
                 default:
                     speed = 1;
                     body.Width = 40;

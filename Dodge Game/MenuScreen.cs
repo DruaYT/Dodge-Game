@@ -47,6 +47,18 @@ namespace Dodge_Game
             buttonExit.Location = new Point(f.Width - buttonExit.Width - 10, f.Height - buttonExit.Height - 10);
             buttonFullScreen.Location = new Point(buttonExit.Location.X, buttonExit.Location.Y - (int)(buttonFullScreen.Height * 1.2));
             buttonHighScores.Location = new Point(buttonFullScreen.Location.X, buttonFullScreen.Location.Y - (int)(buttonFullScreen.Height * 1.2));
+            buttonInfiniteMode.Location = new Point(buttonFullScreen.Location.X, buttonHighScores.Location.Y - (int)(buttonInfiniteMode.Height * 1.2));
+
+            if (Form1.InfiniteMode == false)
+            {
+                buttonInfiniteMode.ForeColor = Color.Green;
+                buttonInfiniteMode.Text = "NORMAL";
+            }
+            else
+            {
+                buttonInfiniteMode.ForeColor = Color.IndianRed;
+                buttonInfiniteMode.Text = "FREEPLAY";
+            }
         }
 
         private void MenuScreen_Load(object sender, EventArgs e)
@@ -101,6 +113,22 @@ namespace Dodge_Game
             h.Size = this.FindForm().Size;
             this.FindForm().Controls.Add(h);
             this.FindForm().Controls.Remove(this);
+        }
+
+        private void buttonInfiniteMode_Click(object sender, EventArgs e)
+        {
+            if (Form1.InfiniteMode == true)
+            {
+                buttonInfiniteMode.ForeColor = Color.Green;
+                buttonInfiniteMode.Text = "NORMAL";
+                Form1.InfiniteMode = false;
+            }
+            else
+            {
+                buttonInfiniteMode.ForeColor = Color.IndianRed;
+                buttonInfiniteMode.Text = "FREEPLAY";
+                Form1.InfiniteMode = true;
+            }
         }
     }
 }

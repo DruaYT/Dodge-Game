@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Dodge_Game
 {
@@ -42,46 +43,10 @@ namespace Dodge_Game
             labelScoreInsane.Location = new Point((f.Width / 2) - (labelScoreEasy.Width / 2), labelScoreHard.Location.Y + (int)(labelScoreHard.Height * 1.2));
             buttonMenu.Location = new Point( (f.Width / 2) - (buttonMenu.Width / 2), f.Height - (f.Height / 3));
 
-            XmlReader reader = XmlReader.Create("Resources/HighScoreData.xml");
-
-            try
-            {
-                while (reader.Read())
-                {
-                    if (reader.NodeType == XmlNodeType.Text)
-                    {
-                        reader.ReadToFollowing("Easy");
-                        labelScoreEasy.Text = $"EASY HIGH SCORE - {reader.ReadElementContentAsInt()}";
-
-                        reader.ReadToFollowing("Normal");
-                        labelScoreEasy.Text = $"NORMAL HIGH SCORE - {reader.ReadElementContentAsInt()}";
-
-                        reader.ReadToFollowing("Hard");
-                        labelScoreEasy.Text = $"HARD HIGH SCORE - {reader.ReadElementContentAsInt()}";
-
-                        reader.ReadToFollowing("Insane");
-                        labelScoreEasy.Text = $"INSANE HIGH SCORE - {reader.ReadElementContentAsInt()}";
-                    }
-
-                }
-            }
-            catch
-            {
-
-                reader.Close();
-
-                XmlWriter writer = XmlWriter.Create("Resources/HighScoreData.xml", null);
-
-                writer.WriteElementString("Easy", Convert.ToString(0));
-
-                writer.WriteElementString("Normal", Convert.ToString(0));
-
-                writer.WriteElementString("Hard", Convert.ToString(0));
-
-                writer.WriteElementString("Insane", Convert.ToString(0));
-
-                writer.Close();
-            }
+            labelScoreEasy.Text = $"EASY HIGH SCORE - {Form1.highScoreEasy}";
+            labelScoreNormal.Text = $"NORMAL HIGH SCORE - {Form1.highScoreNormal}";
+            labelScoreHard.Text = $"HARD HIGH SCORE - {Form1.highScoreHard}";
+            labelScoreInsane.Text = $"INSANE HIGH SCORE - {Form1.highScoreInsane}";
 
 
         }
