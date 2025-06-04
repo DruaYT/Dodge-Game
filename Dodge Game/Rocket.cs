@@ -42,9 +42,10 @@ namespace Dodge_Game
         public bool Update(RectangleF player, Form f)
         {
             bool h = false;
+
             if (body.X > f.Width - body.Width)
             {
-                h = CheckForHit();
+                h = true;
 
                 body.X = f.Width - 10;
                 velX = -velX;
@@ -52,7 +53,7 @@ namespace Dodge_Game
 
             if (body.X < 0)
             {
-                h = CheckForHit();
+                h = true;
 
                 body.X = 0;
                 velX = -velX;
@@ -60,7 +61,7 @@ namespace Dodge_Game
 
             if (body.Y > f.Height - body.Height)
             {
-                h = CheckForHit();
+                h = true;
 
                 body.Y = f.Height - 10;
                 velY = -velY;
@@ -68,7 +69,7 @@ namespace Dodge_Game
 
             if (body.Y < 0)
             {
-                h = CheckForHit();
+                h = true;
 
                 body.Y = 0;
                 velY = -velY;
@@ -82,7 +83,7 @@ namespace Dodge_Game
                 return true;
             }
 
-            return CheckForHit();
+            return h;
         }
 
     }

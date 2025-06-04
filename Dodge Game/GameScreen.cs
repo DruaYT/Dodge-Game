@@ -30,6 +30,8 @@ namespace Dodge_Game
 
         List<Rocket> rockets = new List<Rocket>();
 
+        List<Explosion> explosions = new List<Explosion>();
+
         List<Particle> particles = new List<Particle>();
 
         List<PowerUp> powerUps = new List<PowerUp>();
@@ -387,6 +389,15 @@ namespace Dodge_Game
                     {
                         e.Graphics.FillEllipse(new SolidBrush(Color.White), r.body);
                     }
+                }
+            }
+
+            foreach (Explosion ex in explosions)
+            {
+
+                if (ex != null)
+                {
+                    e.Graphics.FillEllipse(new SolidBrush(Color.Firebrick), ex.body);
                 }
             }
         }
@@ -1216,7 +1227,7 @@ namespace Dodge_Game
 
                                 l.hitboxes.Clear();
 
-                                //Refresh();
+                                Refresh();
 
                                 return;
                             }
@@ -1231,6 +1242,8 @@ namespace Dodge_Game
                         {
 
                             lazers.Remove(l);
+
+                            Refresh();
 
                             return;
 
@@ -1250,12 +1263,38 @@ namespace Dodge_Game
 
                         if (hit == true)
                         {
+                            Explosion ex = new Explosion(new PointF(r.body.X + (r.body.Width / 2), r.body.Y + (r.body.Height / 2)), r.body.Width * (2 * Form1.difficulty));
+
+                            explosions.Add(ex);
+
                             dispose.Add(r);
                         }
                         else
                         {
-                            Emmit(r.body.Location, rand.Next(1, 2), rand.Next((int)(r.body.Width / 3), (int)r.body.Width), "smoke", new PointF(-r.velX, -r.velY));
+                            if (tick % 4 == 0)
+                            {
+                                Emmit(r.body.Location, rand.Next(1, 2), rand.Next((int)(r.body.Width / 3), (int)r.body.Width), "smoke", new PointF(-r.velX, -r.velY));
+                            }
                         }
+                    }
+                }
+
+                //
+                // Explosion Update
+                //
+                foreach (Explosion ex in explosions)
+                {
+                    Form f = this.FindForm();
+
+                    int hit = ex.Update(player, f);
+
+                    if (hit == 1)
+                    {
+                        dispose.Add(ex);
+                    }
+                    else if(hit==-1)
+                    {
+                        playerVelX = ex.pos.X - player.X;
                     }
                 }
 
@@ -1284,6 +1323,14 @@ namespace Dodge_Game
                     else if (powerUps.Contains(i))
                     {
                         powerUps.Remove((PowerUp)i);
+                    }
+                    else if (rockets.Contains(i))
+                    {
+                        rockets.Remove((Rocket)i);
+                    }
+                    else if (explosions.Contains(i))
+                    {
+                        explosions.Remove((Explosion)i);
                     }
                 }
 
