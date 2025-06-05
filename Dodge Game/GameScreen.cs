@@ -195,6 +195,13 @@ namespace Dodge_Game
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
+            else if (rand.Next(1, 100) <= 25 * nm)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "fragmenter");
+                enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
+            }
             else
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
@@ -258,7 +265,7 @@ namespace Dodge_Game
             }
             else
             {
-                if (_change < 0)
+                if (_change < 0 && playerImmune == false)
                 {
                     lives--;
 
@@ -272,6 +279,9 @@ namespace Dodge_Game
                     currentCooldown = (int)(cooldownTickBase * 1.2);
 
                     h.PlaySync();
+
+                    playerImmune = true;
+
                     Refresh();
                 }
             }
@@ -507,7 +517,7 @@ namespace Dodge_Game
 
         }
 
-        private void FireAsset(string type, PointF pos, float size, float velX, float velY, bool IsFriendly)
+        private void FireAsset(string type, PointF pos, float size, float velX, float velY, bool IsFriendly, bool scatter)
         {
             switch (type)
             {
@@ -554,7 +564,7 @@ namespace Dodge_Game
                     Emmit(pos, rand.Next(3, 6), (int)size, "smoke", new PointF((velX + rand.Next(-180, 180)), (velY + rand.Next(-180, 180))));
 
 
-                    Ball ball = new Ball(velN.X, velN.Y, b, IsFriendly);
+                    Ball ball = new Ball(velN.X, velN.Y, b, IsFriendly, scatter);
 
                     ballList.Add(ball);
 
@@ -775,7 +785,7 @@ namespace Dodge_Game
                         if (powerUp == "gunner")
                         {
                             currentShootCooldown = shootCooldownBase/5;
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                         }
                         else
                         {
@@ -784,17 +794,17 @@ namespace Dodge_Game
 
                         if (powerUp == "None")
                         {
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                         }
                         else if (powerUp == "shotgun")
                         {
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X + 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y + 50), true);
-                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X - 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y - 50), true);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X + 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y + 50), true, false);
+                            FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X - 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y - 50), true, false);
                         }
                         else if(powerUp == "lazer")
                         {
-                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true);
+                            FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                         }
 
 
@@ -1029,32 +1039,38 @@ namespace Dodge_Game
                             if (en.type == "lazer")
                             {
 
-                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false);
+                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false, false);
 
                             }
                             else if(en.type == "normal")
                             {
 
-                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false, false);
+
+                            }
+                            else if (en.type == "fragmenter")
+                            {
+
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false, true);
 
                             }
                             else if (en.type == "rocketeer")
                             {
 
-                                FireAsset("rocket", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false);
+                                FireAsset("rocket", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false, false);
 
                             }
                             else if (en.type == "buckshot")
                             {
 
-                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false);
-                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX - 50, LaunchY - 50, false);
-                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX, LaunchY, false, false);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX - 50, LaunchY - 50, false, false);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (7 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false, false);
 
                             }
                             else if(en.type == "armored")
                             {
-                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (10 * Form1.difficulty), LaunchX, LaunchY, false);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (10 * Form1.difficulty), LaunchX, LaunchY, false, false);
                             }
 
 
@@ -1062,23 +1078,23 @@ namespace Dodge_Game
                         else if(en.type == "gunner" && tick % 10 == 0)
                         {
 
-                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false, false);
 
                         }
                         else if (en.type == "gatlinggunner" && tick % (50 / Form1.difficulty) == 0)
                         {
 
-                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX, LaunchY, false);
-                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX - 50, LaunchY - 50, false);
-                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX, LaunchY, false, false);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX - 50, LaunchY - 50, false, false);
+                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (12 * Form1.difficulty), LaunchX + 50, LaunchY + 50, false, false);
 
                         }
                         else if (en.type == "incinerator" && tick % (50 / Form1.difficulty) == 0)
                         {
 
-                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false);
-                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), (LaunchX - 50) * 10, (LaunchY - 50) * 10, false);
-                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), (LaunchX + 50) * 10, (LaunchY + 50) * 10, false);
+                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false, false);
+                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), (LaunchX - 50) * 10, (LaunchY - 50) * 10, false, false);
+                            FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), (LaunchX + 50) * 10, (LaunchY + 50) * 10, false, false);
 
                         }
 
@@ -1134,7 +1150,7 @@ namespace Dodge_Game
                             changeScore(change, false);
 
                             dispose.Add(b);
-                            Refresh();
+                            //Refresh();
 
                             //return;
                         }
@@ -1166,6 +1182,25 @@ namespace Dodge_Game
                             }
                             else
                             {
+
+                                if (b.ScatterMode == true)
+                                {
+                                    for (int i = 0; i < 4*Form1.difficulty; i++)
+                                    {
+                                        float ang = (float)((i * Math.PI) / 4)*(float)(180/Math.PI);
+
+                                        float velX = (float)(bulletSpeed*Math.Cos(ang));
+
+                                        float velY = (float)(bulletSpeed * Math.Sin(ang));
+
+                                        FireAsset("bullet", b.body.Location, b.body.Width,velX, velY, b.IsFriendly, false);
+                                    }
+
+                                    ballList.Remove(b);
+
+                                    return;
+                                }
+
                                 dispose.Add(b);
                                 //Refresh();
                                 //return;
@@ -1225,15 +1260,14 @@ namespace Dodge_Game
 
                                 changeScore(-1, false);
 
-                                l.hitboxes.Clear();
+                                l.hitboxes.Remove(h);
 
                                 Refresh();
 
                                 return;
+
                             }
                         }
-
-
 
                     }
                     else
@@ -1241,11 +1275,7 @@ namespace Dodge_Game
                         if (l.IsWarning == false)
                         {
 
-                            lazers.Remove(l);
-
-                            Refresh();
-
-                            return;
+                            dispose.Add(l);
 
                         }
                         
@@ -1263,7 +1293,7 @@ namespace Dodge_Game
 
                         if (hit == true)
                         {
-                            Explosion ex = new Explosion(new PointF(r.body.X + (r.body.Width / 2), r.body.Y + (r.body.Height / 2)), r.body.Width * (2 * Form1.difficulty));
+                            Explosion ex = new Explosion(new PointF(r.body.X + (r.body.Width / 2), r.body.Y + (r.body.Height / 2)), r.body.Width * (5 * Form1.difficulty));
 
                             explosions.Add(ex);
 
@@ -1271,9 +1301,17 @@ namespace Dodge_Game
                         }
                         else
                         {
-                            if (tick % 4 == 0)
+                            if (tick % 2 == 0)
                             {
-                                Emmit(r.body.Location, rand.Next(1, 2), rand.Next((int)(r.body.Width / 3), (int)r.body.Width), "smoke", new PointF(-r.velX, -r.velY));
+
+                                float siz = rand.Next((int)(r.body.Width / 3), (int)r.body.Width);
+
+                                SizeF s = SizeRatio(siz, siz);
+
+                                PointF v = TranslateRatio(-r.velX + rand.Next(-3, 3), -r.velY + rand.Next(-3, 3));
+
+                                Particle p = new Particle(v.X, v.Y, (float)s.Width / (5), r.body.X + (r.body.Width / 2), r.body.Y + (r.body.Height / 2), 150, s.Width, Color.LightGray);
+                                particles.Add(p);
                             }
                         }
                     }
@@ -1294,7 +1332,13 @@ namespace Dodge_Game
                     }
                     else if(hit==-1)
                     {
-                        playerVelX = ex.pos.X - player.X;
+                        playerVelX = 10*(ex.pos.X - player.X);
+                        playerVelY = 10*(ex.pos.Y - player.Y);
+
+                        player.X += ex.pos.X - player.X;
+                        player.Y += ex.pos.Y - player.Y;
+
+                        changeScore(-1, false);
                     }
                 }
 

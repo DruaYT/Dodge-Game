@@ -14,14 +14,15 @@ namespace Dodge_Game
 
         public float velX, velY;
 
-        public bool isHit = false, IsFriendly;
+        public bool isHit = false, IsFriendly, ScatterMode;
 
-        public Ball(float _velX, float _velY, RectangleF _body, bool _IsFriendly) 
+        public Ball(float _velX, float _velY, RectangleF _body, bool _IsFriendly, bool _Scatter) 
         {
             velX = _velX/50;
             velY = _velY/50;
             body = _body;
             IsFriendly = _IsFriendly;
+            ScatterMode = _Scatter;
         }
 
         private bool CheckForHit()

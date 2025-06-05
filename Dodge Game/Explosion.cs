@@ -38,7 +38,7 @@ namespace Dodge_Game
             }
             else
             {
-                radius--;
+                radius = (float)Math.Round(radius-(radius/5));
 
                 body.Width = radius;
                 body.Height = radius;

@@ -164,11 +164,11 @@ namespace Dodge_Game
             if (player.IntersectsWith(body))
             {
 
-                health--;
-
                 if (type != "armored" && type != "gatlinggunner")
                 {
-                   if (health <= 0)
+                    health--;
+
+                    if (health <= 0)
                     {
                         return 1;
                     }
@@ -176,6 +176,7 @@ namespace Dodge_Game
                 }
                 else
                 {
+
                     if (health <= 0)
                     {
                         if (type == "lazer" || type == "gunner")
