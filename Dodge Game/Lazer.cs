@@ -37,15 +37,20 @@ namespace Dodge_Game
             body.X2 = point1.X;
             body.Y2 = point1.Y;
 
-            int segs = (int)Math.Sqrt(Math.Pow(point1.X - point0.X, 2) + Math.Pow(point1.Y - point0.Y, 2));
+            float segs = (float)(Math.Pow(point1.X - point0.X, 2) + Math.Pow(point1.Y - point0.Y, 2));
 
-            for (int i = 0; i < (segs / (lwidth)); i++)
+            for (int i = 0; i < (segs / (2*lwidth)); i++)
             {
                 if (i % lwidth == 0)
                 {
+
+                    float posX = point0.X - ((point0.X - point1.X)/i)*(lwidth);
+                    float posY = point0.Y - ((point0.Y - point1.Y)/i)*(lwidth);
+
                     RectangleF hit = new RectangleF();
 
-                    hit.Location = new PointF(point0.X + (point1.X / i), point0.Y + (point1.Y / i));
+                    //hit.Location = new PointF(point0.X + (point1.X / i), point0.Y + (point1.Y / i));
+                    hit.Location = new PointF(posX, posY);
 
                     hit.Width = lwidth;
                     hit.Height = lwidth;

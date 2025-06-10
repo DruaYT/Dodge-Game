@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Windows.Documents;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using System.Security.Policy;
+using System.Net.Security;
 
 namespace Dodge_Game
 {
@@ -204,7 +205,7 @@ namespace Dodge_Game
             }
             else
             {
-                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "lazer");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
@@ -1039,7 +1040,7 @@ namespace Dodge_Game
                             if (en.type == "lazer")
                             {
 
-                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 10, LaunchY * 10, false, false);
+                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 3, LaunchY * 3, false, false);
 
                             }
                             else if(en.type == "normal")
@@ -1252,21 +1253,32 @@ namespace Dodge_Game
 
                         l.Update();
 
-                        foreach (RectangleF h in l.hitboxes)
+                      //  foreach (RectangleF h in l.hitboxes)
+                      //  {
+                      //      if (l.IsFriendly == false && h.IntersectsWith(player) && playerImmune == false)
+                      //      {
+                      //          playerImmune = true;
+                      //
+                      //          changeScore(-1, false);
+
+                      //          l.hitboxes.Remove(h);
+
+                      //          Refresh();
+
+                      //          return;
+
+                      //      }
+                      //  }
+
+                        RectangleF h = l.hitboxes.Find(x => x.IntersectsWith(player) == true);
+
+                        if (h != null && l.IsFriendly == false && playerImmune == false)
                         {
-                            if (l.IsFriendly == false && h.IntersectsWith(player) && playerImmune == false)
-                            {
-                                playerImmune = true;
+                            playerImmune = true;
 
-                                changeScore(-1, false);
+                            changeScore(-1, false);
 
-                                l.hitboxes.Remove(h);
-
-                                Refresh();
-
-                                return;
-
-                            }
+                            l.hitboxes.Remove(h);
                         }
 
                     }
