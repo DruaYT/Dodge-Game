@@ -130,6 +130,9 @@
   <data name="sound_Hit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sound_Hit.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="sound_Laser" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sound_Laser.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="sound_Parry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sound_Parry.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

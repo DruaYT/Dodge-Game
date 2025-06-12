@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Shapes;
 using System.Windows.Resources;
 using System.Media;
+using System.IO;
 using System.Resources;
 using System.Reflection;
 using System.Windows.Documents;
@@ -56,6 +57,13 @@ namespace Dodge_Game
         int cooldownTickBase = 10, shootCooldownBase = 10*Form1.difficulty;
 
         string powerUp = "None";
+
+        private void PlaySound(string fileName)
+        {
+            var sound = new System.Windows.Media.MediaPlayer();
+            sound.Open(new Uri(Application.StartupPath + $"/Resources/{fileName}"));
+            sound.Play();
+        }
 
         private void buttonMenu_Click(object sender, EventArgs e)
         {
@@ -105,17 +113,17 @@ namespace Dodge_Game
 
             if (this.BackColor.R != 0)
             {
-                this.BackColor=Color.FromArgb(255, this.BackColor.R - 1, this.BackColor.G, this.BackColor.B);
+                this.BackColor=Color.FromArgb(255, (int)(this.BackColor.R / 1.2), this.BackColor.G, this.BackColor.B);
             }
 
             if (this.BackColor.G != 0)
             {
-                this.BackColor = Color.FromArgb(255, this.BackColor.R, this.BackColor.G - 1, this.BackColor.B);
+                this.BackColor = Color.FromArgb(255, this.BackColor.R, (int)(this.BackColor.G / 1.2), this.BackColor.B);
             }
 
             if (this.BackColor.B != 0)
             {
-                this.BackColor = Color.FromArgb(255, this.BackColor.R, this.BackColor.G, this.BackColor.B - 1);
+                this.BackColor = Color.FromArgb(255, this.BackColor.R, this.BackColor.G, (int)(this.BackColor.B / 1.2));
             }
         }
 
@@ -205,7 +213,7 @@ namespace Dodge_Game
             }
             else
             {
-                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "lazer");
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "normal");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
@@ -272,14 +280,13 @@ namespace Dodge_Game
 
                     Emmit(new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 5, 10, "blood", new PointF(0, 0));
 
-                    powerUp = "None";
+                    //powerUp = "None";
 
                     this.BackColor = Color.Red;
-                    SoundPlayer h = new SoundPlayer(Properties.Resources.sound_Hit);
 
-                    currentCooldown = (int)(cooldownTickBase * 1.2);
+                    PlaySound("sound_Hit.wav");
 
-                    h.PlaySync();
+                    Thread.Sleep(100);
 
                     playerImmune = true;
 
@@ -439,9 +446,7 @@ namespace Dodge_Game
                         playerVelX *= 2;
                         playerVelY *= 2;
                         currentCooldown = cooldownTickBase;
-                        SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Dodge);
-                        shoot.LoadTimeout = 1;
-                        shoot.Play();
+                        PlaySound("sound_Dodge.wav");
                     }
                     break;
 
@@ -564,6 +569,7 @@ namespace Dodge_Game
 
                     Emmit(pos, rand.Next(3, 6), (int)size, "smoke", new PointF((velX + rand.Next(-180, 180)), (velY + rand.Next(-180, 180))));
 
+                    PlaySound("sound_Shoot.wav");
 
                     Ball ball = new Ball(velN.X, velN.Y, b, IsFriendly, scatter);
 
@@ -738,8 +744,17 @@ namespace Dodge_Game
                 }
 
                 flashCheck();
-                mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
-                mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
+                try
+                {
+                    mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
+                    mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
+                }
+                catch
+                {
+                    mousePos.X = 0;
+                    mousePos.Y = 0;
+                }
+                
 
                 buttonMenu.Visible = false;
 
@@ -778,13 +793,9 @@ namespace Dodge_Game
                     {
                         this.BackColor = Color.FromArgb(255, 100, 50, 50);
 
-                        SoundPlayer shoot = new SoundPlayer(Properties.Resources.sound_Shoot);
-
-                        shoot.LoadTimeout = 1;
-                        shoot.Play();
-
                         if (powerUp == "gunner")
                         {
+
                             currentShootCooldown = shootCooldownBase/5;
                             FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                         }
@@ -795,16 +806,19 @@ namespace Dodge_Game
 
                         if (powerUp == "None")
                         {
+
                             FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                         }
                         else if (powerUp == "shotgun")
                         {
+
                             FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                             FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X + 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y + 50), true, false);
                             FireAsset("bullet", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), 14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X - 50), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y - 50), true, false);
                         }
                         else if(powerUp == "lazer")
                         {
+
                             FireAsset("lazer", new PointF(player.X + player.Width / 2, player.Y + player.Height / 2), (float)14, 2 * (-(player.X + (player.Width / 2)) + mousePos.X), 2 * (-(player.Y + (player.Height / 2)) + mousePos.Y), true, false);
                         }
 
@@ -997,6 +1011,8 @@ namespace Dodge_Game
                                     b.velX = -b.velX + en.Xvel;
                                     b.velY = -b.velY + en.Yvel;
 
+                                    PlaySound("sound_Parry.wav");
+
                                     Emmit(new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), 10, 10, "parry", new PointF(0, 0));
 
                                 }
@@ -1161,10 +1177,7 @@ namespace Dodge_Game
                             {
                                 this.BackColor = Color.FromArgb(255, 100, 100, 100);
 
-                                SoundPlayer parry = new SoundPlayer(Properties.Resources.sound_Parry);
-
-                                parry.Load();
-                                parry.Play();
+                                PlaySound("sound_Parry.wav");
 
                                 for (int i = 1; i < rand.Next(5, 10); i++)
                                 {
@@ -1238,8 +1251,10 @@ namespace Dodge_Game
                 //
                 foreach (Lazer l in lazers)
                 {
-                    if (l.warnTime <= 0)
+                    if (l.warnTime <= 0 && l.IsWarning == true)
                     {
+                        PlaySound("sound_Laser.wav");
+
                         l.IsWarning = false;
                     }
                     else
@@ -1272,13 +1287,14 @@ namespace Dodge_Game
 
                         RectangleF h = l.hitboxes.Find(x => x.IntersectsWith(player) == true);
 
-                        if (h != null && l.IsFriendly == false && playerImmune == false)
+                        if (h != null && h.IntersectsWith(player) && l.IsFriendly == false && playerImmune == false)
                         {
-                            playerImmune = true;
-
                             changeScore(-1, false);
 
+                            currentCooldown = cooldownTickBase * 2;
+
                             l.hitboxes.Remove(h);
+
                         }
 
                     }
