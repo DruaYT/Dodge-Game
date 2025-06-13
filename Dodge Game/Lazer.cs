@@ -39,7 +39,7 @@ namespace Dodge_Game
 
             float segs = (float)(Math.Pow(point1.X - point0.X, 2) + Math.Pow(point1.Y - point0.Y, 2));
 
-            for (int i = 0; i < (segs / (2*lwidth)); i++)
+            for (int i = 0; i < (segs / (4*lwidth)); i++)
             {
                 if (i % lwidth == 0)
                 {

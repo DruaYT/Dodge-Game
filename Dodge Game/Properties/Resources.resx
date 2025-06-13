@@ -127,6 +127,9 @@
   <data name="sound_Dodge" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sound_Dodge.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="sound_Explosion" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sound_Explosion.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="sound_Hit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sound_Hit.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

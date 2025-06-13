@@ -32,13 +32,13 @@ namespace Dodge_Game
         public int Update(RectangleF player, Form f)
         {
 
-            if (radius <= 0)
+            if (radius <= 1)
             {
                 return 1;
             }
             else
             {
-                radius = (float)Math.Round(radius-(radius/5));
+                radius = (float)Math.Floor(radius-(radius/5));
 
                 body.Width = radius;
                 body.Height = radius;

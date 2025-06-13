@@ -643,6 +643,7 @@ namespace Dodge_Game
 
                     Emmit(pos, rand.Next(3, 6), (int)size, "smoke", new PointF((velX + rand.Next(-180, 180)), (velY + rand.Next(-180, 180))));
 
+                    PlaySound("sound_Laser.wav");
 
                     Rocket rocket = new Rocket(rvelN.X, rvelN.Y, r, IsFriendly);
 
@@ -721,35 +722,34 @@ namespace Dodge_Game
             {
                 tick++;
 
-                if (score >= 50 && Form1.InfiniteMode == false)
-                {
-                    WinScreen win = new WinScreen();
-                    win.Size = this.FindForm().Size;
-                    this.FindForm().Controls.Add(win);
-                    this.FindForm().Controls.Remove(this);
-                }
-
                 if (enemyList.Count == 0)
                 {
                     AddEnemy();
                 }
 
+                //
+                // Decide to add new enemy or powerup
+                //
                 if ((tick % Math.Ceiling((decimal)(10000/(1 + score))) == 0) && rand.Next(1, 100) <= Math.Pow(Form1.difficulty, 2))
                 {
                     AddEnemy();
                 }
-                else if(tick % 100 == 0 && rand.Next(1,10) <= (50/Form1.difficulty)/(1 + powerUps.Count()))
+                else if(tick % 100 == 0 && rand.Next(1,10) <= (100/Form1.difficulty)/(1 + powerUps.Count()))
                 {
                     AddPowerUp();
                 }
 
                 flashCheck();
-                try
+
+                //
+                // Fint the position of the mouse
+                //
+                if (score < 50 && Form1.InfiniteMode == false)
                 {
                     mousePos.X = (Cursor.Position.X - this.FindForm().Location.X) * (this.FindForm().Width / this.FindForm().DesktopBounds.Width);
                     mousePos.Y = (Cursor.Position.Y - this.FindForm().Location.Y) * (this.FindForm().Height / this.FindForm().DesktopBounds.Height);
                 }
-                catch
+                else
                 {
                     mousePos.X = 0;
                     mousePos.Y = 0;
@@ -791,7 +791,7 @@ namespace Dodge_Game
                 {
                     if (LeftMouseDown == true)
                     {
-                        this.BackColor = Color.FromArgb(255, 100, 50, 50);
+                        //this.BackColor = Color.FromArgb(255, 100, 50, 50);
 
                         if (powerUp == "gunner")
                         {
@@ -929,11 +929,12 @@ namespace Dodge_Game
                             Emmit(new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), 10, 20, "blood", new PointF(0,0));
 
                             changeScore(change, false);
-                            dispose.Add(en);
+                            //dispose.Add(en);
+                            enemyList.Remove(en);
 
                             Refresh();
 
-                            //return;
+                            return;
                         }
                     }
                     else
@@ -1025,16 +1026,15 @@ namespace Dodge_Game
                         {
                             if (l.IsFriendly == true && l.IsWarning == false)
                             {
-                                foreach (RectangleF h in l.hitboxes)
+
+                                RectangleF h = l.hitboxes.Find(x => x.IntersectsWith(en.body) == true);
+
+                                if (h != null && h.IntersectsWith(en.body) && l.IsFriendly == true && playerImmune == false)
                                 {
-                                    if (h.IntersectsWith(en.body))
-                                    {
-                                        en.health--;
+                                    en.health--;
 
-                                        l.hitboxes.Remove(h);
+                                    l.hitboxes.Remove(h);
 
-                                        return;
-                                    }
                                 }
                             }
                         }
@@ -1268,23 +1268,6 @@ namespace Dodge_Game
 
                         l.Update();
 
-                      //  foreach (RectangleF h in l.hitboxes)
-                      //  {
-                      //      if (l.IsFriendly == false && h.IntersectsWith(player) && playerImmune == false)
-                      //      {
-                      //          playerImmune = true;
-                      //
-                      //          changeScore(-1, false);
-
-                      //          l.hitboxes.Remove(h);
-
-                      //          Refresh();
-
-                      //          return;
-
-                      //      }
-                      //  }
-
                         RectangleF h = l.hitboxes.Find(x => x.IntersectsWith(player) == true);
 
                         if (h != null && h.IntersectsWith(player) && l.IsFriendly == false && playerImmune == false)
@@ -1321,6 +1304,8 @@ namespace Dodge_Game
 
                         if (hit == true)
                         {
+                            PlaySound("sound_Explosion.wav");
+
                             Explosion ex = new Explosion(new PointF(r.body.X + (r.body.Width / 2), r.body.Y + (r.body.Height / 2)), r.body.Width * (5 * Form1.difficulty));
 
                             explosions.Add(ex);
@@ -1404,6 +1389,23 @@ namespace Dodge_Game
                     {
                         explosions.Remove((Explosion)i);
                     }
+                }
+
+                if (score >= 50 && Form1.InfiniteMode == false)
+                {
+                    WinScreen win = new WinScreen();
+                    win.Size = this.FindForm().Size;
+                    gameTimer.Stop();
+
+                    enemyList.Clear();
+                    ballList.Clear();
+                    lazers.Clear();
+                    explosions.Clear();
+                    rockets.Clear();
+                    particles.Clear();
+
+                    this.FindForm().Controls.Add(win);
+                    this.FindForm().Controls.Remove(this);
                 }
 
                 Refresh();

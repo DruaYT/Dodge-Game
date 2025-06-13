@@ -91,6 +91,15 @@ namespace Dodge_Game.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream sound_Explosion {
+            get {
+                return ResourceManager.GetStream("sound_Explosion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream sound_Hit {
             get {
                 return ResourceManager.GetStream("sound_Hit", resourceCulture);
