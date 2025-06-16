@@ -50,6 +50,16 @@ namespace Dodge_Game
                     color = Color.Teal;
 
                     break;
+
+                case "rocket":
+                    color = Color.Lime;
+
+                    break;
+
+                case "scatter":
+                    color = Color.Pink;
+
+                    break;
             }
         }
 

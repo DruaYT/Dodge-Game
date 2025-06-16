@@ -24,21 +24,6 @@ namespace Dodge_Game
             IsFriendly = _IsFriendly;
         }
 
-        private bool CheckForHit()
-        {
-            if (isHit == false)
-            {
-                isHit = true;
-            }
-            else
-            {
-                isHit = false;
-                return true;
-            }
-
-            return false;
-        }
-
         public bool Update(RectangleF player, Form f)
         {
             bool h = false;

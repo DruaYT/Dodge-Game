@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace Dodge_Game
 {
@@ -25,7 +26,9 @@ namespace Dodge_Game
 
             type = _type;
 
-
+            //
+            // Set properties based on enemy type
+            //
             switch (type)
             {
                 case "normal":
@@ -133,7 +136,15 @@ namespace Dodge_Game
             body.Location = _pos;
         }
 
-        public int Update(RectangleF player, Form f)
+        public void Damage()
+        {
+            if (health > 0)
+            {
+                health -= 1;
+            }
+        }
+
+        public int Update(RectangleF player, Form f, List<Explosion> explosions)
         {
            // body.Y += Yvel;
            // body.X += Xvel;
@@ -159,6 +170,22 @@ namespace Dodge_Game
                 
                 Yvel -= speed;
 
+            }
+
+            foreach (Explosion exp in explosions)
+            {
+                if (exp != null && body.IntersectsWith(exp.body))
+                {
+
+                    health -= 3;
+
+                    Xvel = (int)(10 * (exp.pos.X - body.X));
+                    Yvel = (int)(10 * (exp.pos.Y - body.Y));
+
+                    body.X += exp.pos.X - body.X;
+                    body.Y += exp.pos.Y - body.Y;
+
+                }
             }
 
             if (player.IntersectsWith(body))
