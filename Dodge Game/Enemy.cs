@@ -17,8 +17,9 @@ namespace Dodge_Game
         public string type;
 
         public Color color;
+        public bool armored = false;
         public int terminalVel = 15;
-        public int health, speed, Xvel, Yvel;
+        public int health, totalHealth, speed, Xvel, Yvel;
 
         public Enemy(PointF _pos, RectangleF _body, string _type) 
         {
@@ -46,24 +47,27 @@ namespace Dodge_Game
                     health = 5;
                     speed = 1;
                     color = Color.LightGray;
+                    armored = true;
 
                     break;
 
                 case "gatlinggunner":
                     body.Width = 70;
                     body.Height = 70;
-                    health = 10;
+                    health = 15;
                     speed = 1;
                     color = Color.Purple;
+                    armored = true;
 
                     break;
 
                 case "incinerator":
                     body.Width = 65;
                     body.Height = 65;
-                    health = 10;
+                    health = 15;
                     speed = 2;
                     color = Color.Purple;
+                    armored = true;
 
                     break;
 
@@ -102,6 +106,7 @@ namespace Dodge_Game
                     body.Height = 45;
                     health = 5;
                     color = Color.Yellow;
+                    armored = true;
 
                     break;
 
@@ -124,6 +129,16 @@ namespace Dodge_Game
 
                     break;
 
+                case "gatlinglaser":
+                    speed = 1;
+
+                    body.Width = 70;
+                    body.Height = 70;
+                    health = 15;
+                    color = Color.Purple;
+                    armored = true;
+                    break;
+
                 default:
                     speed = 1;
                     body.Width = 40;
@@ -134,6 +149,7 @@ namespace Dodge_Game
             }
 
             body.Location = _pos;
+            totalHealth = health;
         }
 
         public void Damage()
@@ -146,8 +162,6 @@ namespace Dodge_Game
 
         public int Update(RectangleF player, Form f, List<Explosion> explosions)
         {
-           // body.Y += Yvel;
-           // body.X += Xvel;
             PointF diff = new PointF(body.X - player.X, body.Y - player.Y);
 
             if (player.X + diff.X / 2 > body.X && Math.Abs(Xvel + speed) <= terminalVel)
@@ -185,13 +199,18 @@ namespace Dodge_Game
                     body.X += exp.pos.X - body.X;
                     body.Y += exp.pos.Y - body.Y;
 
+                    if (health <= 0)
+                    {
+                        return 1;
+                    }
+
                 }
             }
 
             if (player.IntersectsWith(body))
             {
 
-                if (type != "armored" && type != "gatlinggunner")
+                if (armored == false)
                 {
                     health--;
 

@@ -148,14 +148,21 @@ namespace Dodge_Game
             //
             int nm = ((score) / (10 - Form1.difficulty));
 
-            if (rand.Next(1, 100) <= 1 * nm)
+            if (rand.Next(1, 100) <= 2 * nm)
+            {
+                Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinglaser");
+                enemyList.Add(n);
+
+                n.body.Size = SizeRatio(n.body.Width, n.body.Height);
+            }
+            else if (rand.Next(1, 100) <= 3 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "incinerator");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 2 * nm)
+            else if (rand.Next(1, 100) <= 4 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
                 enemyList.Add(n);
@@ -343,6 +350,24 @@ namespace Dodge_Game
                 if (enemy != null) 
                 {
                     e.Graphics.FillEllipse(new SolidBrush(enemy.color), enemy.body);
+
+                    if (Debug == true)
+                    {
+                        e.Graphics.DrawString(enemy.health.ToString(), new Font(FontFamily.GenericSansSerif, enemy.body.Width / 2), new SolidBrush(Color.White), new Point((int)(enemy.body.X + (enemy.body.Width / 3)), (int)(enemy.body.Y + (enemy.body.Height / 3))));
+                    }
+
+                    if (enemy.health > 0)
+                    {
+                        RectangleF Hbar = new RectangleF();
+
+                        Hbar.Size = new SizeF((enemy.body.Width*2)/(enemy.totalHealth / enemy.health), enemy.body.Height / 4);
+                        Hbar.Location = new PointF(enemy.body.X + (enemy.body.Width/2) - (Hbar.Width/2), enemy.body.Y - (enemy.body.Height / 2) - (Hbar.Height/2));
+
+                        e.Graphics.FillRectangle(new SolidBrush(Color.Red), Hbar);
+
+                        dispose.Add(Hbar);
+                    }
+                    
                 }  
 
             }
@@ -597,7 +622,7 @@ namespace Dodge_Game
 
                     PointF p0 = new PointF(pos.X, pos.Y);
 
-                    PointF p1 = TranslateRatio(velX * (this.Width - pos.X)/size, velY * (this.Height - pos.Y)/size);
+                    PointF p1 = TranslateRatio(velX * (this.Width - pos.X)/(size*3), velY * (this.Height - pos.Y)/(size*3));
 
                     Lazer l;
 
@@ -946,7 +971,7 @@ namespace Dodge_Game
                             changeScore(change, false);
  
                         }
-                        else
+                        else if (change >= 0 || en.health <= 0)
                         {
 
                             Emmit(new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), 10, 20, "blood", new PointF(0,0));
@@ -997,7 +1022,7 @@ namespace Dodge_Game
                             {
                                 en.health--;
 
-                                if (en.type!="deflector" && en.type!= "armored" && en.type != "gatlinggunner" && en.type != "incinerator")
+                                if (en.armored == false)
                                 {
 
                                     if (en.health <= 0)
@@ -1045,25 +1070,12 @@ namespace Dodge_Game
                             }
                         }
 
-                        foreach (Lazer l in lazers)
+
+                        Lazer h = lazers.Find(l => l.hitboxes.Contains(l.hitboxes.Find(x => x.IntersectsWith(en.body) ) ) == true );
+
+                        if (h != null && h.IsFriendly == true && playerImmune == false)
                         {
-                            if (l.IsFriendly == true && l.IsWarning == false)
-                            {
-
-                                RectangleF h = l.hitboxes.Find(x => x.IntersectsWith(en.body) == true);
-
-                                if (h != null && h.IntersectsWith(en.body) && l.IsFriendly == true && playerImmune == false)
-                                {
-                                    en.health--;
-
-                                    l.hitboxes.Remove(h);
-
-                                }
-                            }
-                        }
-
-                        foreach (Explosion ex in explosions)
-                        {
+                            en.health--;
 
                         }
 
@@ -1112,10 +1124,17 @@ namespace Dodge_Game
 
 
                         }
-                        else if(en.type == "gunner" && tick % 10 == 0)
+                        else if((en.type == "gunner" || en.type == "gatlinglaser") && tick % 10 == 0)
                         {
 
-                            FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false, false, true);
+                            if (en.type == "gunner")
+                            {
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false, false, true);
+                            }
+                            else
+                            {
+                                FireAsset("lazer", new PointF(en.body.X + (en.body.Width / 2), en.body.Y + (en.body.Height / 2)), (float)(en.body.Height / 1.1), LaunchX * 5, LaunchY * 5, false, false, true);
+                            }
 
                         }
                         else if (en.type == "gatlinggunner" && tick % (50 / Form1.difficulty) == 0)
@@ -1324,8 +1343,9 @@ namespace Dodge_Game
 
                         Enemy en = enemyList.Find(x => x.body.IntersectsWith(r.body) == true);
 
-                        if (hit == true || (en != null && r.IsFriendly == true && r.body.IntersectsWith(en.body)))
+                        if (hit == true || (en != null && r.IsFriendly == true && en.body.IntersectsWith(r.body)))
                         {
+
                             PlaySound("sound_Explosion.wav");
 
                             Explosion ex = new Explosion(new PointF(r.body.X + (r.body.Width / 2), r.body.Y + (r.body.Height / 2)), r.body.Width * (5 * Form1.difficulty));
