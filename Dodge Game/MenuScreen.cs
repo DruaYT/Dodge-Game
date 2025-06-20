@@ -40,6 +40,7 @@ namespace Dodge_Game
             this.Width = f.Width;
             this.Height = f.Height;
             labelTitle.Location = new Point((f.Width / 2) - (labelTitle.Width / 2), 0 + (f.Height / 8));
+            labelControls.Location = new Point(0, this.FindForm().Height / 3);
             buttonEasy.Location = new Point((f.Width / 2) - (buttonEasy.Width / 2), (f.Height / 4));
             buttonNormal.Location = new Point(buttonEasy.Location.X, buttonEasy.Location.Y + (int)(buttonEasy.Height * 1.2));
             buttonHard.Location = new Point(buttonNormal.Location.X, buttonNormal.Location.Y + (int)(buttonNormal.Height * 1.2));

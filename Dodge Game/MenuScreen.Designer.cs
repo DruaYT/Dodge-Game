@@ -37,6 +37,7 @@
             this.buttonFullScreen = new System.Windows.Forms.Button();
             this.buttonHighScores = new System.Windows.Forms.Button();
             this.buttonInfiniteMode = new System.Windows.Forms.Button();
+            this.labelControls = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // labelTitle
@@ -180,11 +181,26 @@
             this.buttonInfiniteMode.UseVisualStyleBackColor = true;
             this.buttonInfiniteMode.Click += new System.EventHandler(this.buttonInfiniteMode_Click);
             // 
+            // labelControls
+            // 
+            this.labelControls.BackColor = System.Drawing.Color.Transparent;
+            this.labelControls.Font = new System.Drawing.Font("MS PGothic", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelControls.ForeColor = System.Drawing.Color.White;
+            this.labelControls.Location = new System.Drawing.Point(2, 122);
+            this.labelControls.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelControls.Name = "labelControls";
+            this.labelControls.Size = new System.Drawing.Size(370, 216);
+            this.labelControls.TabIndex = 9;
+            this.labelControls.Text = "[W,A,S,D] To move\r\n[Spacebar] To dodge / parry\r\n[Left Mouse Button] To shoot\r\n[P]" +
+    " To pause\r\n";
+            this.labelControls.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // MenuScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
+            this.Controls.Add(this.labelControls);
             this.Controls.Add(this.buttonInfiniteMode);
             this.Controls.Add(this.buttonHighScores);
             this.Controls.Add(this.buttonFullScreen);
@@ -213,5 +229,6 @@
         private System.Windows.Forms.Button buttonFullScreen;
         private System.Windows.Forms.Button buttonHighScores;
         private System.Windows.Forms.Button buttonInfiniteMode;
+        private System.Windows.Forms.Label labelControls;
     }
 }
