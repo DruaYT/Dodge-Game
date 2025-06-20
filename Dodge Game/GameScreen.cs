@@ -148,70 +148,73 @@ namespace Dodge_Game
             //
             int nm = ((score) / (10 - Form1.difficulty));
 
-            if (rand.Next(1, 100) <= 2 * nm)
+            int rn = rand.Next(1, 200); ;
+
+
+            if (rn <= 2 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinglaser");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 3 * nm)
+            else if (rn <= 3 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "incinerator");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 4 * nm)
+            else if (rn <= 4 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gatlinggunner");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 5 * nm)
+            else if (rn <= 5 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "armored");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 7 * nm)
+            else if (rn <= 7 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "gunner");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 10 * nm)
+            else if (rn <= 10 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "rocketeer");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 12 * nm)
+            else if (rn <= 12 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "deflector");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 15 * nm)
+            else if (rn <= 15 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "buckshot");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 20 * nm)
+            else if (rn <= 20 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "lazer");
                 enemyList.Add(n);
 
                 n.body.Size = SizeRatio(n.body.Width, n.body.Height);
             }
-            else if (rand.Next(1, 100) <= 25 * nm)
+            else if (rn <= 25 * nm)
             {
                 Enemy n = new Enemy(new PointF(r.X, r.Y), r, "fragmenter");
                 enemyList.Add(n);
@@ -774,7 +777,7 @@ namespace Dodge_Game
                 //
                 // Decide to add new enemy or powerup
                 //
-                if ((tick % Math.Ceiling((decimal)(10000/(1 + score))) == 0) && rand.Next(1, 50) <= Math.Pow(Form1.difficulty, 2))
+                if ((tick % Math.Ceiling((decimal)(1000/(1 + score))) == 0) && rand.Next(1, 50) <= Math.Pow(Form1.difficulty, 2))
                 {
                     AddEnemy();
                 }
@@ -1124,12 +1127,12 @@ namespace Dodge_Game
 
 
                         }
-                        else if((en.type == "gunner" || en.type == "gatlinglaser") && tick % 10 == 0)
+                        else if((en.type == "gunner" || en.type == "gatlinglaser") && tick % 20 == 0)
                         {
 
                             if (en.type == "gunner")
                             {
-                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (5 * Form1.difficulty), LaunchX, LaunchY, false, false, true);
+                                FireAsset("bullet", new PointF(en.body.X + en.body.Width / 2, en.body.Y + en.body.Height / 2), (10 * Form1.difficulty), LaunchX, LaunchY, false, false, true);
                             }
                             else
                             {

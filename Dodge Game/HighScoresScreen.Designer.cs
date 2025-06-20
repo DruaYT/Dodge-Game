@@ -34,6 +34,7 @@
             this.labelScoreNormal = new System.Windows.Forms.Label();
             this.labelScoreHard = new System.Windows.Forms.Label();
             this.labelScoreInsane = new System.Windows.Forms.Label();
+            this.buttonDataErase = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // labelScoreEasy
@@ -112,11 +113,28 @@
             this.labelScoreInsane.Text = "INSANE SCORE - 0";
             this.labelScoreInsane.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // buttonDataErase
+            // 
+            this.buttonDataErase.FlatAppearance.BorderColor = System.Drawing.Color.Red;
+            this.buttonDataErase.FlatAppearance.BorderSize = 3;
+            this.buttonDataErase.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonDataErase.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonDataErase.ForeColor = System.Drawing.Color.Red;
+            this.buttonDataErase.Location = new System.Drawing.Point(380, 427);
+            this.buttonDataErase.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonDataErase.Name = "buttonDataErase";
+            this.buttonDataErase.Size = new System.Drawing.Size(176, 46);
+            this.buttonDataErase.TabIndex = 17;
+            this.buttonDataErase.Text = "ERASE DATA";
+            this.buttonDataErase.UseVisualStyleBackColor = true;
+            this.buttonDataErase.Click += new System.EventHandler(this.buttonDataErase_Click);
+            // 
             // HighScoresScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
+            this.Controls.Add(this.buttonDataErase);
             this.Controls.Add(this.labelScoreInsane);
             this.Controls.Add(this.labelScoreHard);
             this.Controls.Add(this.labelScoreNormal);
@@ -138,5 +156,6 @@
         private System.Windows.Forms.Label labelScoreNormal;
         private System.Windows.Forms.Label labelScoreHard;
         private System.Windows.Forms.Label labelScoreInsane;
+        private System.Windows.Forms.Button buttonDataErase;
     }
 }

@@ -19,13 +19,18 @@ namespace Dodge_Game
             InitializeComponent();
         }
 
-        private void buttonMenu_Click(object sender, EventArgs e)
+        private void ToMenu()
         {
             MenuScreen menu = new MenuScreen();
 
             menu.Size = this.FindForm().Size;
             this.FindForm().Controls.Add(menu);
             this.FindForm().Controls.Remove(this);
+        }
+
+        private void buttonMenu_Click(object sender, EventArgs e)
+        {
+            ToMenu();
         }
 
         private void HighScoresScreen_Load(object sender, EventArgs e)
@@ -49,6 +54,16 @@ namespace Dodge_Game
             labelScoreInsane.Text = $"INSANE HIGH SCORE - {Form1.highScoreInsane}";
 
 
+        }
+
+        private void buttonDataErase_Click(object sender, EventArgs e)
+        {
+            Form1.highScoreEasy = 0;
+            Form1.highScoreNormal = 0;
+            Form1.highScoreHard = 0;
+            Form1.highScoreInsane = 0;
+
+            ToMenu();
         }
     }
 }
