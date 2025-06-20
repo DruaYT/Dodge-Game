@@ -47,6 +47,7 @@ namespace Dodge_Game
             labelScoreHard.Location = new Point((f.Width / 2) - (labelScoreEasy.Width / 2), labelScoreNormal.Location.Y + (int)(labelScoreNormal.Height * 1.2));
             labelScoreInsane.Location = new Point((f.Width / 2) - (labelScoreEasy.Width / 2), labelScoreHard.Location.Y + (int)(labelScoreHard.Height * 1.2));
             buttonMenu.Location = new Point( (f.Width / 2) - (buttonMenu.Width / 2), f.Height - (f.Height / 3));
+            buttonDataErase.Location = new Point(buttonMenu.Location.X, (int)(buttonMenu.Location.Y - (buttonMenu.Height * 1.1)));
 
             labelScoreEasy.Text = $"EASY HIGH SCORE - {Form1.highScoreEasy}";
             labelScoreNormal.Text = $"NORMAL HIGH SCORE - {Form1.highScoreNormal}";
